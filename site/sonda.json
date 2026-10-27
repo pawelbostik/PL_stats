@@ -1,0 +1,298 @@
+{
+ "cas": "2026-10-27 21:00:36 UTC",
+ "testy": [
+  {
+   "test": "html_liga",
+   "adresa": "https://understat.com/league/EPL/2026",
+   "status": 200,
+   "typ": "text/html; charset=UTF-8",
+   "velikost_kB": 18.3,
+   "ok": true,
+   "obsahuje_data_v_html": false,
+   "zacatek": "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n\t\t<base href=\"https://understat.com/\">\n\t\t<title>EPL xG Table and Scorers for the 2026/2027 season | Understat.com</title>\n        <meta charset=\"UTF-8\" />\n\t\t<meta name=\"description\" content=\"xG table of EPL standings and top scorers for the 2026/2027 seaso",
+   "sekund": 0.63
+  },
+  {
+   "test": "liga_2026",
+   "adresa": "https://understat.com/getLeagueData/EPL/2026",
+   "status": 200,
+   "typ": "text/javascript;charset=UTF-8",
+   "velikost_kB": 289.5,
+   "ok": true,
+   "klice": {
+    "teams": [
+     "dict",
+     20
+    ],
+    "players": [
+     "list",
+     451
+    ],
+    "dates": [
+     "list",
+     380
+    ]
+   },
+   "sekund": 0.99
+  },
+  {
+   "test": "liga_2014",
+   "adresa": "https://understat.com/getLeagueData/EPL/2014",
+   "status": 200,
+   "typ": "text/javascript;charset=UTF-8",
+   "velikost_kB": 514.9,
+   "ok": true,
+   "klice": {
+    "teams": [
+     "dict",
+     20
+    ],
+    "players": [
+     "list",
+     531
+    ],
+    "dates": [
+     "list",
+     380
+    ]
+   },
+   "sekund": 0.94
+  },
+  {
+   "test": "zapas",
+   "adresa": "https://understat.com/getMatchData/31259",
+   "status": 200,
+   "typ": "text/javascript;charset=UTF-8",
+   "velikost_kB": 36.7,
+   "ok": true,
+   "klice": {
+    "rosters": [
+     "dict",
+     2
+    ],
+    "shots": [
+     "dict",
+     2
+    ],
+    "tmpl": [
+     "dict",
+     2
+    ]
+   },
+   "sekund": 0.44
+  },
+  {
+   "test": "hrac",
+   "adresa": "https://understat.com/getPlayerData/8260",
+   "status": 200,
+   "typ": "text/javascript;charset=UTF-8",
+   "velikost_kB": 390.0,
+   "ok": true,
+   "klice": {
+    "player": [
+     "dict",
+     3
+    ],
+    "matches": [
+     "list",
+     207
+    ],
+    "groups": [
+     "dict",
+     5
+    ],
+    "positionsList": [
+     "list",
+     17
+    ],
+    "minMaxPlayerStats": [
+     "dict",
+     2
+    ],
+    "shots": [
+     "list",
+     714
+    ],
+    "lastMatch": [
+     "dict",
+     3
+    ]
+   },
+   "sekund": 1.36
+  },
+  {
+   "test": "tym",
+   "adresa": "https://understat.com/getTeamData/Aston_Villa/2026",
+   "status": 200,
+   "typ": "text/javascript;charset=UTF-8",
+   "velikost_kB": 21.6,
+   "ok": true,
+   "klice": {
+    "dates": [
+     "list",
+     38
+    ],
+    "players": [
+     "list",
+     24
+    ],
+    "statistics": [
+     "dict",
+     7
+    ]
+   },
+   "sekund": 0.59
+  }
+ ],
+ "zapasy": {
+  "celkem": 380,
+  "odehrano": 80
+ },
+ "ukazka_zapasu": {
+  "id": "31259",
+  "isResult": true,
+  "h": {
+   "id": "77",
+   "title": "Sunderland",
+   "short_title": "SUN"
+  },
+  "a": {
+   "id": "245",
+   "title": "Leeds",
+   "short_title": "LED"
+  },
+  "goals": {
+   "h": "0",
+   "a": "0"
+  },
+  "xG": {
+   "h": "1.02357",
+   "a": "1.06511"
+  },
+  "datetime": "2026-10-25 16:30:00",
+  "forecast": {
+   "w": "0.32",
+   "d": "0.3197",
+   "l": "0.3603"
+  }
+ },
+ "ukazka_hrace": {
+  "id": "8260",
+  "player_name": "Erling Haaland",
+  "games": "8",
+  "time": "711",
+  "goals": "9",
+  "xG": "7.044472187757492",
+  "assists": "0",
+  "xA": "1.740727722644806",
+  "shots": "30",
+  "key_passes": "4",
+  "yellow_cards": "0",
+  "red_cards": "0",
+  "position": "F",
+  "team_title": "Manchester City",
+  "npg": "9",
+  "npxG": "7.044472187757492",
+  "xGChain": "9.391115002334118",
+  "xGBuildup": "1.8586600590497255"
+ },
+ "ukazka_tymu": {
+  "id": "71",
+  "title": "Aston Villa",
+  "history_prvni": {
+   "h_a": "a",
+   "xG": 0.275249,
+   "xGA": 4.00327,
+   "npxG": 0.275249,
+   "npxGA": 4.00327,
+   "ppda": {
+    "att": 355,
+    "def": 11
+   },
+   "ppda_allowed": {
+    "att": 127,
+    "def": 34
+   },
+   "deep": 0,
+   "deep_allowed": 13,
+   "scored": 0,
+   "missed": 4,
+   "xpts": 0.010799999999999999,
+   "result": "l",
+   "date": "2026-08-23 13:00:00",
+   "wins": 0,
+   "draws": 0,
+   "loses": 1,
+   "pts": 0,
+   "npxGD": -3.7280209999999996
+  }
+ },
+ "ukazka_strely": {
+  "id": "701520",
+  "minute": "6",
+  "result": "SavedShot",
+  "X": "0.8130000305175781",
+  "Y": "0.5229999923706055",
+  "xG": "0.061016783118247986",
+  "player": "Brian Brobbey",
+  "h_a": "h",
+  "player_id": "9789",
+  "situation": "OpenPlay",
+  "season": "2026",
+  "shotType": "RightFoot",
+  "match_id": "31259",
+  "h_team": "Sunderland",
+  "a_team": "Leeds",
+  "h_goals": "0",
+  "a_goals": "0",
+  "date": "2026-10-25 16:30:00",
+  "player_assisted": "Enzo Le Fée",
+  "lastAction": "Pass"
+ },
+ "ukazka_sestavy": {
+  "id": "809157",
+  "goals": "0",
+  "own_goals": "0",
+  "shots": "0",
+  "xG": "0",
+  "time": "90",
+  "player_id": "13712",
+  "team_id": "77",
+  "position": "GK",
+  "player": "Robin Roefs",
+  "h_a": "h",
+  "yellow_card": "0",
+  "red_card": "0",
+  "roster_in": "0",
+  "roster_out": "0",
+  "key_passes": "0",
+  "assists": "0",
+  "xA": "0",
+  "xGChain": "0",
+  "xGBuildup": "0",
+  "positionOrder": "1"
+ },
+ "ukazka_hrac_zapas": {
+  "goals": "1",
+  "shots": "3",
+  "xG": "0.6184015274047852",
+  "time": "90",
+  "position": "FW",
+  "h_team": "Aston Villa",
+  "a_team": "Manchester City",
+  "h_goals": "2",
+  "a_goals": "1",
+  "date": "2026-10-24",
+  "id": "31251",
+  "season": "2026",
+  "roster_id": "807879",
+  "xA": "0",
+  "assists": "0",
+  "key_passes": "0",
+  "npg": "1",
+  "npxG": "0.6184015274047852",
+  "xGChain": "0.08727710694074631",
+  "xGBuildup": "0"
+ },
+ "vysledek": "VŠE OK"
+}
