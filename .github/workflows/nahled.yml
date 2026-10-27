@@ -1,0 +1,39 @@
+name: Náhled dat (bez zveřejnění)
+
+on:
+  push:
+    branches: [nahled]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nahled
+  cancel-in-progress: false
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Sonda dat
+        if: hashFiles('probe.py') != ''
+        run: python probe.py
+      - name: Sestavení dat
+        if: hashFiles('probe.py') == '' && hashFiles('build.py') != ''
+        run: python build.py
+      - name: Historické sezony (stahují se jen chybějící)
+        if: hashFiles('probe.py') == '' && hashFiles('build_history.py') != ''
+        run: python build_history.py
+      - name: Uložení do větve náhledu
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A site cache 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Náhled dat $(date -u +%Y-%m-%dT%H:%M)"
+          git push
