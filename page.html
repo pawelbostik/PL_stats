@@ -1,0 +1,985 @@
+<title>Statistiky Premier League</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Rozvržení: styl Cadastra z hokejové stránky přenesený na trávník – křídový papír, zelené štítky,
+   ostré rámečky s tvrdým stínem, detaily v širokém panelu v klubových barvách. */
+:root {
+  --paper: #edf2ea;        /* podklad: křídou nalajnovaný trávník za světla */
+  --board: #fafcf8;        /* plocha karet */
+  --row: #eff4ec;
+  --field: #f7faf5;
+  --ink: #13201a;
+  --muted: #536459;
+  --faint: #879a8c;
+  --line: #cddbcf;
+  --line-strong: #9cb3a2;
+  --green: #1f6a3d;
+  --green-deep: #175330;
+  --green-soft: #dcebdf;
+  --red: #c0302a;
+  --red-deep: #a2241f;
+  --red-soft: #f6dedb;
+  --blue: #2a5788;
+  --blue-soft: #dce6f1;
+  --good: #2f6b34;
+  --bad: #a2241f;
+  --turf: #f4f9f1;
+  --chalk: #9cb3a2;
+  --shadow: 3px 3px 0 rgba(19, 48, 30, .14);
+  --shadow-hi: 4px 4px 0 rgba(19, 48, 30, .22);
+  --scrim: rgb(10 24 16 / .5);
+  --page-bg: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27620%27 height=%27620%27 viewBox=%270 0 620 620%27%3E%3Cg fill=%27none%27 stroke=%27%231f6a3d%27 stroke-opacity=%270.11%27 stroke-width=%275%27%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%27120%27/%3E%3Cpath d=%27M0 310h620%27/%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%276%27 fill=%27%231f6a3d%27 fill-opacity=%270.11%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E") right -170px top -230px / 620px no-repeat, linear-gradient(180deg, #f1f6ee 0, #e9f0e6 60%, #e5ede2 100%);
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Spectral", Georgia, "Times New Roman", serif;
+  --tc1: var(--ink); --tc2: var(--green); --tc-on: #fafcf8; --tc-text: var(--green-deep);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1712; --board: #15201a; --row: #19261f; --field: #122019; --ink: #e3eee6; --muted: #9db3a5; --faint: #6d8274;
+    --line: #283a2f; --line-strong: #44604f; --green: #7cc596; --green-deep: #95d4ab; --green-soft: #1c3226;
+    --red: #e8664f; --red-deep: #f08a75; --red-soft: #3a2326; --blue: #8fb9de; --blue-soft: #1d2d3d; --good: #93c08a; --bad: #f08a75;
+    --turf: #122019; --chalk: #4a6656; --shadow: 3px 3px 0 rgba(0, 0, 0, .4); --shadow-hi: 4px 4px 0 rgba(0, 0, 0, .5); --scrim: rgb(2 8 5 / .65);
+    --page-bg: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27620%27 height=%27620%27 viewBox=%270 0 620 620%27%3E%3Cg fill=%27none%27 stroke=%27%237cc596%27 stroke-opacity=%270.07%27 stroke-width=%275%27%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%27120%27/%3E%3Cpath d=%27M0 310h620%27/%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%276%27 fill=%27%237cc596%27 fill-opacity=%270.07%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E") right -170px top -230px / 620px no-repeat, linear-gradient(180deg, #101a14 0, #0d1611 100%);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1712; --board: #15201a; --row: #19261f; --field: #122019; --ink: #e3eee6; --muted: #9db3a5; --faint: #6d8274;
+  --line: #283a2f; --line-strong: #44604f; --green: #7cc596; --green-deep: #95d4ab; --green-soft: #1c3226;
+  --red: #e8664f; --red-deep: #f08a75; --red-soft: #3a2326; --blue: #8fb9de; --blue-soft: #1d2d3d; --good: #93c08a; --bad: #f08a75;
+  --turf: #122019; --chalk: #4a6656; --shadow: 3px 3px 0 rgba(0, 0, 0, .4); --shadow-hi: 4px 4px 0 rgba(0, 0, 0, .5); --scrim: rgb(2 8 5 / .65);
+  --page-bg: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27620%27 height=%27620%27 viewBox=%270 0 620 620%27%3E%3Cg fill=%27none%27 stroke=%27%237cc596%27 stroke-opacity=%270.07%27 stroke-width=%275%27%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%27120%27/%3E%3Cpath d=%27M0 310h620%27/%3E%3Ccircle cx=%27310%27 cy=%27310%27 r=%276%27 fill=%27%237cc596%27 fill-opacity=%270.07%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E") right -170px top -230px / 620px no-repeat, linear-gradient(180deg, #101a14 0, #0d1611 100%);
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+body {
+  background: var(--page-bg); background-color: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+.num, td, .v { font-variant-numeric: tabular-nums lining-nums; }
+a { color: var(--green-deep); }
+button { font: inherit; color: inherit; }
+
+/* Záhlaví */
+header.top { padding-top: 34px; display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-family: var(--font-display); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; font-size: 12px; color: var(--green-deep); }
+h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(38px, 7vw, 64px); line-height: .98; margin: 0; letter-spacing: -.015em; text-wrap: balance; }
+h1 .dot { color: var(--red); }
+.home { color: inherit; text-decoration: none; }
+.home:hover .dot { color: var(--green); }
+.meta { color: var(--muted); font-size: 14.5px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+/* postranní čára: široký zelený pruh, mezera, tenká křídová čára */
+.touch { height: 14px; margin-top: 8px; background: linear-gradient(180deg, var(--green) 0 6px, transparent 6px 10px, var(--chalk) 10px 12px, transparent 12px); }
+
+/* Lídři */
+.leaders { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.lead {
+  background: var(--board); border: 1px solid var(--ink); border-radius: 2px; padding: 12px 14px 13px; text-align: left; box-shadow: var(--shadow);
+  cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; transition: transform .08s, box-shadow .08s;
+}
+.lead:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-hi); }
+.lead .lbl { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: .16em; font-size: 10.5px; color: var(--green-deep); }
+.lead .val { font-family: var(--font-display); font-weight: 900; font-size: 40px; line-height: 1.02; }
+.lead .who { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead .tm { color: var(--muted); font-size: 13.5px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* Záložky */
+.tabs { display: flex; gap: 2px; box-shadow: inset 0 -1px 0 var(--ink); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  white-space: nowrap; flex: none; font-family: var(--font-display); font-weight: 600; font-size: 19px; padding: 8px 16px 9px; background: none;
+  border: 1px solid transparent; border-bottom: 0; border-radius: 2px 2px 0 0; color: var(--muted); cursor: pointer;
+}
+.tab[aria-selected="true"] { color: var(--ink); background: var(--board); border-color: var(--ink); box-shadow: inset 0 3px 0 var(--green); }
+.tab:hover { color: var(--ink); }
+.view { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Filtry */
+.filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field > span { font-family: var(--font-display); font-size: 10.5px; font-weight: 600; color: var(--green-deep); text-transform: uppercase; letter-spacing: .16em; }
+input[type="search"], select, input[type="number"] {
+  font: inherit; font-size: 15px; color: var(--ink); background: var(--field); border: 1px solid var(--line-strong); border-radius: 2px; padding: 6px 10px; min-height: 38px;
+}
+input[type="search"] { width: 230px; max-width: 100%; }
+input[type="number"] { width: 84px; }
+.seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; background: var(--field); flex-wrap: wrap; }
+.seg button { font-size: 15px; font-weight: 500; border: 0; background: none; color: var(--muted); padding: 6px 12px; min-height: 36px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-strong); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--board); }
+.count { margin-left: auto; color: var(--muted); font-size: 14px; align-self: center; font-style: italic; }
+.reset { font-size: 14px; color: var(--green-deep); background: none; border: 0; cursor: pointer; padding: 8px 4px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Tabulky */
+.tablebox { background: var(--board); border: 1px solid var(--ink); border-radius: 2px; overflow: auto; max-height: 74vh; box-shadow: var(--shadow); }
+.tablebox.free { max-height: none; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+.main table { min-width: 900px; }
+th, td { padding: 7px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+thead th { position: sticky; top: 0; z-index: 2; background: var(--board); font-family: var(--font-display); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--green-deep); border-bottom: 1px solid var(--ink); }
+th button { all: unset; cursor: pointer; display: inline-flex; gap: 3px; align-items: center; }
+th button:hover { color: var(--ink); }
+th.sorted { color: var(--ink); }
+th.sorted button::after { content: "▼"; font-size: 8px; color: var(--red); }
+th.sorted.asc button::after { content: "▲"; }
+tbody tr.click { cursor: pointer; }
+tbody tr td { background: var(--board); }
+tbody tr:nth-child(even) td { background: var(--row); }
+tbody tr.click:hover td { background: var(--green-soft); }
+tbody tr:last-child td { border-bottom: 0; }
+.l { text-align: left; }
+.c { text-align: center; }
+.stick1 { position: sticky; left: 0; z-index: 1; width: 44px; color: var(--faint); }
+.stick2 { position: sticky; left: 44px; z-index: 1; box-shadow: 1px 0 0 var(--line); }
+thead .stick1, thead .stick2 { z-index: 3; }
+td.sep, th.sep { border-left: 1px solid var(--line-strong); }
+.name { font-weight: 600; }
+.sm { color: var(--muted); font-size: 13.5px; font-style: italic; }
+.tdot { display: inline-block; width: 9px; height: 9px; margin-right: 7px; vertical-align: 0; border-radius: 1px; box-shadow: inset -4px 0 0 var(--c2, transparent); background: var(--c1, var(--ink)); outline: 1px solid var(--line-strong); }
+.pts { font-weight: 700; }
+.pos { color: var(--good); }
+.neg { color: var(--bad); }
+.dim { color: var(--muted); }
+.chip { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .1em; padding: 0 4px; border-radius: 2px; border: 1px solid var(--line-strong); color: var(--muted); margin-left: 6px; vertical-align: 1px; text-transform: uppercase; }
+tr.zcl td.stick1 { box-shadow: inset 4px 0 0 var(--green); color: var(--ink); }
+tr.zrel td.stick1 { box-shadow: inset 4px 0 0 var(--red); color: var(--ink); }
+.form { display: inline-flex; gap: 2px; }
+.form b { width: 20px; height: 20px; line-height: 20px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; border-radius: 2px; color: var(--board); cursor: pointer; }
+.form .W { background: var(--green); } .form .D { background: var(--line-strong); } .form .L { background: var(--red); }
+.legend { color: var(--muted); font-size: 14px; font-style: italic; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.legend i.sw { display: inline-block; width: 11px; height: 11px; margin-right: 6px; vertical-align: -1px; font-style: normal; }
+.empty { padding: 40px 16px; text-align: center; color: var(--muted); font-style: italic; }
+footer { color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line-strong); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+
+/* Zápasy */
+.roundbar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.stepper { display: inline-flex; border: 1px solid var(--ink); border-radius: 2px; background: var(--field); }
+.stepper button { border: 0; background: none; width: 38px; min-height: 36px; font-size: 18px; cursor: pointer; }
+.stepper button:disabled { opacity: .35; cursor: default; }
+.stepper select { border: 0; border-left: 1px solid var(--line-strong); border-right: 1px solid var(--line-strong); border-radius: 0; min-width: 120px; font-weight: 600; }
+.days { display: flex; flex-direction: column; gap: 16px; }
+.day h3 { font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--green-deep); margin: 0 0 6px; padding-bottom: 5px; border-bottom: 1px solid var(--ink); }
+.games { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 10px; }
+.game {
+  background: var(--board); border: 1px solid var(--ink); border-radius: 2px; box-shadow: var(--shadow); padding: 10px 12px 11px; text-align: left;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 4px 10px; align-items: center; min-width: 0;
+}
+button.game { cursor: pointer; transition: transform .08s, box-shadow .08s; }
+button.game:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-hi); }
+.game .gt { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.game .gt.a { text-align: right; }
+.game .sc { font-family: var(--font-display); font-weight: 900; font-size: 24px; line-height: 1; text-align: center; min-width: 64px; }
+.game .sc.up { font-size: 17px; font-weight: 600; color: var(--muted); }
+.game .gx { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.xbar { height: 6px; display: flex; background: var(--line); }
+.xbar i { display: block; height: 100%; }
+.game .gm { grid-column: 1 / -1; font-size: 13px; color: var(--muted); font-style: italic; }
+
+/* Široký panel */
+.scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 20; }
+.drawer {
+  position: fixed; z-index: 21; left: 50%; top: max(2.5vh, env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+  width: min(1220px, calc(100vw - 32px)); max-height: calc(100vh - 5vh); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--board); border: 1px solid var(--ink); border-radius: 2px; box-shadow: 6px 6px 0 rgba(8, 24, 14, .3);
+  display: flex; flex-direction: column;
+}
+.dnav { position: sticky; top: 10px; align-self: flex-end; margin: 10px 10px -48px 0; z-index: 3; flex: none; display: flex; gap: 6px; }
+.dnav button {
+  font: 600 12px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; height: 38px; padding: 0 12px; border-radius: 2px;
+  border: 1px solid var(--tc-on); background: var(--tc1); color: var(--tc-on); cursor: pointer; white-space: nowrap;
+}
+.dnav .close { font-size: 22px; letter-spacing: 0; width: 38px; padding: 0; }
+.dnav button:hover { background: var(--tc-on); color: var(--tc1); }
+.tohome { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 10; font: 600 12px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; padding: 12px 14px; border-radius: 2px; border: 1px solid var(--ink); background: var(--board); color: var(--ink); box-shadow: var(--shadow); cursor: pointer; }
+.tohome:hover { background: var(--ink); color: var(--board); }
+.drawer { --tc-text: var(--tcl, var(--green-deep)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .drawer { --tc-text: var(--tcd, var(--green-deep)); } }
+:root[data-theme="dark"] .drawer { --tc-text: var(--tcd, var(--green-deep)); }
+
+.pd-head { position: relative; background: var(--tc1); color: var(--tc-on); padding: 22px 64px 18px 26px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 22px; align-items: center; border-bottom: 1px solid var(--ink); }
+.pd-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 6px; height: 4px; background: var(--tc2); box-shadow: 0 -8px 0 var(--tc1), 0 -12px 0 var(--tc2); opacity: .95; }
+.pd-num { font-family: var(--font-display); font-weight: 900; font-size: clamp(54px, 9vw, 96px); line-height: .9; letter-spacing: -.03em; min-width: 1.3em; text-align: center; padding-bottom: 14px; }
+.pd-num small { display: block; font-size: 11px; letter-spacing: .2em; font-weight: 600; text-transform: uppercase; opacity: .8; margin-top: 6px; }
+.pd-id { padding-bottom: 14px; min-width: 0; }
+.pd-head .eyebrow { color: var(--tc-on); opacity: .85; }
+.drawer h3 { font-family: var(--font-display); font-weight: 900; font-size: clamp(30px, 4.6vw, 46px); line-height: 1; margin: 4px 0 6px; text-wrap: balance; }
+.pd-head .sub { font-size: 15px; opacity: .92; }
+.tlink { color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: 0; padding: 0; }
+.pd-bio { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 0; font-size: 14px; padding-bottom: 12px; }
+.pd-bio span { padding: 0 14px 0 0; margin-right: 14px; border-right: 1px solid color-mix(in srgb, var(--tc-on) 40%, transparent); }
+.pd-bio span:last-child { border-right: 0; }
+.pd-bio b { font-family: var(--font-display); font-weight: 600; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .75; margin-right: 6px; }
+.pd-body { padding: 22px 26px 30px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 26px 34px; align-items: start; }
+.pd-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.pd-wide { grid-column: 1 / -1; min-width: 0; }
+.big { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--ink); border-radius: 2px; background: var(--field); }
+.big div { padding: 10px 6px; text-align: center; display: flex; flex-direction: column; }
+.big div + div { border-left: 1px solid var(--line); }
+.big b { font-family: var(--font-display); font-size: 32px; line-height: 1; font-weight: 900; color: var(--tc-text); }
+.big span { font-family: var(--font-display); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .14em; margin-top: 4px; }
+.drawer h4 { font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--tc-text); margin: 0 0 6px; padding-bottom: 5px; border-bottom: 1px solid var(--ink); }
+.drawer p.note { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+.prow { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(64px, auto); gap: 10px; align-items: center; padding: 5px 0; font-size: 14.5px; border-bottom: 1px dashed var(--line); }
+.prow .track { height: 8px; background: var(--field); position: relative; overflow: hidden; border: 1px solid var(--line-strong); }
+.prow .track i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--tc-text); }
+.prow .v { text-align: right; font-weight: 600; white-space: nowrap; }
+.prow small { display: block; color: var(--muted); font-size: 12.5px; font-style: italic; }
+.dtab { font-size: 14px; }
+.dtab th, .dtab td { padding: 5px 7px; }
+.dtab thead th { color: var(--tc-text); }
+.scroll { max-height: 440px; overflow: auto; border: 1px solid var(--ink); border-radius: 2px; }
+.scroll.free { max-height: none; }
+.res { display: inline-block; width: 20px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 11px; border-radius: 2px; color: var(--board); line-height: 18px; }
+.res.W { background: var(--green); } .res.D { background: var(--line-strong); } .res.L { background: var(--red); }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; font-size: 14.5px; }
+.facts div { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 4px 0; gap: 8px; }
+.facts span { color: var(--muted); }
+.src { color: var(--muted); font-size: 13px; font-style: italic; margin-top: 6px; }
+
+/* Hřiště a grafy */
+.pitch svg, .chart svg { display: block; width: 100%; height: auto; }
+.pitch .pl { fill: none; stroke: var(--chalk); stroke-width: .35; }
+.pitch .turf { fill: var(--turf); stroke: var(--chalk); stroke-width: .35; }
+.pitch .pd { fill: var(--chalk); }
+.pitch .sh { stroke-width: .35; fill-opacity: .25; cursor: pointer; }
+.pitch .sh.goal { fill-opacity: .95; stroke: var(--ink); stroke-width: .5; }
+.pitch .sh.sel { stroke: var(--ink); stroke-width: .8; fill-opacity: .7; }
+.pitch .sh:hover { fill-opacity: .6; }
+.half { max-width: 420px; margin: 0 auto; width: 100%; }
+.full { max-width: 860px; margin: 0 auto; width: 100%; }
+.shotinfo { min-height: 1.5em; font-size: 14px; color: var(--muted); margin-top: 6px; }
+.shotinfo b { color: var(--ink); }
+.pitchsum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); margin-bottom: 8px; }
+.pitchsum div { padding: 6px 8px; display: flex; flex-direction: column; }
+.pitchsum div + div { border-left: 1px solid var(--line); }
+.pitchsum b { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.pitchsum span { font-family: var(--font-display); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.chart text { fill: var(--muted); font-size: 12px; font-family: var(--font-body); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .axis { stroke: var(--line-strong); stroke-width: 1; }
+.maps2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.maps2 figure { margin: 0; min-width: 0; }
+.maps2 figcaption { font-family: var(--font-display); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+
+/* Detail zápasu */
+.drawer .gm { --ga: var(--gal, var(--blue)); --gh: var(--ghl, var(--red)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .drawer .gm { --ga: var(--gad, var(--blue)); --gh: var(--ghd, var(--red)); } }
+:root[data-theme="dark"] .drawer .gm { --ga: var(--gad, var(--blue)); --gh: var(--ghd, var(--red)); }
+.gm-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); border-bottom: 1px solid var(--ink); }
+.gm-team { padding: 56px 24px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 0; background: var(--c1); color: var(--on); position: relative; }
+.gm-team::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--c2); }
+.gm-team.home { text-align: right; align-items: flex-end; }
+.gm-ab { font-family: var(--font-display); font-weight: 900; font-size: clamp(36px, 6vw, 64px); line-height: .9; letter-spacing: -.02em; }
+.gm-nm { font-family: var(--font-display); font-weight: 600; font-size: 19px; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-align: inherit; }
+.gm-role { font-family: var(--font-display); font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; opacity: .8; margin-bottom: 8px; }
+.gm-score { background: var(--ink); color: var(--board); padding: 56px 26px 16px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; text-align: center; }
+.gm-score b { font-family: var(--font-display); font-weight: 900; font-size: clamp(46px, 7vw, 80px); line-height: .9; letter-spacing: -.02em; }
+.gm-score b i { font-style: normal; opacity: .55; margin: 0 .08em; }
+.gm-score span { font-size: 14px; font-style: italic; opacity: .85; }
+.duel { display: flex; flex-direction: column; gap: 0; }
+.drow { display: grid; grid-template-columns: 60px minmax(0, 1fr) 150px minmax(0, 1fr) 60px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 14.5px; }
+.drow .v { font-weight: 700; font-family: var(--font-display); font-size: 17px; }
+.drow .v.a { text-align: right; }
+.drow .lab { text-align: center; font-family: var(--font-display); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.drow .bh, .drow .ba { height: 8px; background: var(--field); border: 1px solid var(--line-strong); position: relative; overflow: hidden; }
+.drow .bh i { position: absolute; right: 0; top: 0; bottom: 0; background: var(--gh); }
+.drow .ba i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ga); }
+.fcast { display: flex; height: 26px; border: 1px solid var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 12px; }
+.fcast div { display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; color: var(--board); min-width: 0; }
+.lineups { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.lineups > div { min-width: 0; }
+tr.subrow td { color: var(--muted); }
+tr.subhead td { font-family: var(--font-display); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); background: var(--field) !important; }
+
+@media (max-width: 1000px) {
+  .leaders { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .leaders .lead:nth-child(n+4) { display: none; }
+}
+@media (max-width: 860px) {
+  .pd-body { grid-template-columns: minmax(0, 1fr); padding: 18px 16px 26px; }
+  .lineups, .maps2 { grid-template-columns: minmax(0, 1fr); }
+  .drow { grid-template-columns: 48px minmax(0, 1fr) 96px minmax(0, 1fr) 48px; }
+}
+@media (max-width: 620px) {
+  .leaders { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .leaders .lead:nth-child(n+3) { display: none; }
+  .lead .val { font-size: 32px; }
+  input[type="search"] { width: 100%; }
+  .field.grow { width: 100%; }
+  .tab { font-size: 17px; padding: 8px 11px 9px; }
+  .drawer { width: calc(100vw - 16px); top: max(8px, env(safe-area-inset-top, 0px)); max-height: calc(100vh - 16px); }
+  .pd-head { padding: 18px 16px 16px; grid-template-columns: minmax(0, 1fr); padding-top: 58px; }
+  .pd-num { text-align: left; font-size: 54px; }
+  .big b { font-size: 22px; }
+  .big span { font-size: 9px; letter-spacing: .08em; }
+  .prow { grid-template-columns: 110px minmax(0, 1fr) 56px; }
+  .gm-team { padding: 56px 12px 14px; }
+  .gm-score { padding: 56px 12px 14px; }
+  .gm-nm { font-size: 15px; }
+  .facts { grid-template-columns: 1fr; }
+  .pitchsum b { font-size: 17px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .drawer { animation: rise .18s ease-out; }
+  @keyframes rise { from { transform: translate(-50%, 14px); opacity: .5; } to { transform: translateX(-50%); opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow" id="eyebrow">Premier League</div>
+    <h1><a href="#tabulka" class="home" id="home" title="Na úvodní stránku">Statistiky Premier League<span class="dot">.</span></a></h1>
+    <div class="meta"><span id="asof">Načítám data…</span><span>Zdroj: <a href="https://understat.com/league/EPL" target="_blank" rel="noopener">Understat.com</a></span></div>
+    <div class="touch" aria-hidden="true"></div>
+  </header>
+
+  <section class="leaders" id="leaders" aria-label="Lídři ligy"></section>
+
+  <nav class="tabs" role="tablist" aria-label="Přehled">
+    <button class="tab" role="tab" id="tab-tabulka" data-view="tabulka" aria-selected="true">Tabulka</button>
+    <button class="tab" role="tab" id="tab-hraci" data-view="hraci" aria-selected="false">Hráči</button>
+    <button class="tab" role="tab" id="tab-tymy" data-view="tymy" aria-selected="false">Týmy</button>
+    <button class="tab" role="tab" id="tab-zapasy" data-view="zapasy" aria-selected="false">Zápasy</button>
+  </nav>
+
+  <section class="view" id="view-tabulka" role="tabpanel" aria-labelledby="tab-tabulka">
+    <div class="filters">
+      <div class="field"><span>Zápasy</span>
+        <div class="seg" id="tb-mode" role="group" aria-label="Které zápasy započítat">
+          <button type="button" data-v="all" aria-pressed="true">Všechny</button>
+          <button type="button" data-v="h" aria-pressed="false">Doma</button>
+          <button type="button" data-v="a" aria-pressed="false">Venku</button>
+        </div>
+      </div>
+      <span class="count" id="tb-count"></span>
+    </div>
+    <div class="tablebox main free" id="tb-box"></div>
+    <div class="legend"><span><i class="sw" style="background:var(--green)"></i>Liga mistrů (1.–4. místo)</span><span><i class="sw" style="background:var(--red)"></i>Sestup (18.–20. místo)</span><span>xPts jsou očekávané body podle šancí. Kladné „Body − xPts“ znamená, že tým uhrál víc, než odpovídá jeho šancím.</span></div>
+  </section>
+
+  <section class="view" id="view-hraci" role="tabpanel" aria-labelledby="tab-hraci" hidden>
+    <div class="filters">
+      <div class="field"><span>Zobrazení</span>
+        <div class="seg" id="pl-mode" role="group" aria-label="Zobrazení statistik">
+          <button type="button" data-v="basic" aria-pressed="true">Základní</button>
+          <button type="button" data-v="xg" aria-pressed="false">xG a šance</button>
+          <button type="button" data-v="p90" aria-pressed="false">Na 90 minut</button>
+        </div>
+      </div>
+      <label class="field grow"><span>Hledat hráče</span><input type="search" id="pl-q" placeholder="Jméno, např. Souček" autocomplete="off"></label>
+      <label class="field"><span>Tým</span><select id="pl-team"><option value="">Všechny týmy</option></select></label>
+      <label class="field"><span>Pozice</span><select id="pl-pos">
+        <option value="">Všechny</option><option value="F">Útočníci</option><option value="M">Záložníci</option><option value="D">Obránci</option><option value="GK">Brankáři</option>
+      </select></label>
+      <label class="field"><span>Min. minut</span><input type="number" id="pl-min" min="0" step="90" value="0"></label>
+      <button type="button" class="reset" id="pl-reset">Zrušit filtry</button>
+      <span class="count" id="pl-count"></span>
+    </div>
+    <div class="tablebox main" id="pl-box"></div>
+    <div class="legend" id="pl-legend"></div>
+  </section>
+
+  <section class="view" id="view-tymy" role="tabpanel" aria-labelledby="tab-tymy" hidden>
+    <div class="tablebox main free" id="tm-box"></div>
+    <div class="legend"><span>xGD = rozdíl xG a xGA. npxG = xG bez penalt. PPDA = kolik přihrávek soupeř v průměru zahraje, než tým zakročí (čím méně, tím agresivnější presink). Deep = přihrávky do prostoru do 20 metrů od branky soupeře.</span></div>
+  </section>
+
+  <section class="view" id="view-zapasy" role="tabpanel" aria-labelledby="tab-zapasy" hidden>
+    <div class="roundbar">
+      <div class="field"><span>Kolo</span>
+        <div class="stepper"><button type="button" id="rd-prev" aria-label="Předchozí kolo">‹</button><select id="rd-sel" aria-label="Vybrat kolo"></select><button type="button" id="rd-next" aria-label="Další kolo">›</button></div>
+      </div>
+      <label class="field"><span>Nebo všechny zápasy týmu</span><select id="rd-team"><option value="">Vyberte tým</option></select></label>
+    </div>
+    <div class="days" id="rd-days"></div>
+    <div class="legend"><span>Proužek pod výsledkem ukazuje poměr xG obou týmů. U budoucích zápasů je odhad Understatu, jak zápas dopadne.</span></div>
+  </section>
+
+  <footer>
+    <span>Data: <a href="https://understat.com" target="_blank" rel="noopener">Understat.com</a> (vlastní model očekávaných gólů xG). Stránka se aktualizuje automaticky.</span>
+    <span>Nekomerční projekt. Hokejové statistiky: <a href="https://pawelbostik.github.io/NHL_stats/" target="_blank" rel="noopener">Statistiky NHL</a>.</span>
+  </footer>
+</div>
+
+<button type="button" class="tohome" id="tohome" hidden>↑ Úvod</button>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="d-name"></aside>
+
+<script>
+(() => {
+  "use strict";
+  const BASE = window.PL_BASE || "./";
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (x, n = 1) => { if (x == null || isNaN(x)) return "–"; let s = (+x).toFixed(n); if (+s === 0) s = s.replace("-", ""); return s.replace(".", ",").replace("-", "−"); };
+  const sgn = (x, n = 1) => x == null || isNaN(x) ? "–" : (+(+x).toFixed(n) > 0 ? "+" : "") + fmt(x, n);
+  const pm = x => x > 0.05 ? "pos" : x < -0.05 ? "neg" : "dim";
+  const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const plural = (n, a, b, c) => n === 1 ? a : n >= 2 && n <= 4 ? b : c;
+
+  /* ===== Klubové barvy (hlavní, doplňková) podle názvů na Understatu ===== */
+  const TC = {
+    "Arsenal": ["#DB0007", "#FFFFFF"], "Aston Villa": ["#670E36", "#95BFE5"], "Bournemouth": ["#DA291C", "#111111"],
+    "Brentford": ["#E30613", "#FFFFFF"], "Brighton": ["#0057B8", "#FFFFFF"], "Burnley": ["#6C1D45", "#99D6EA"],
+    "Cardiff": ["#0070B5", "#D11524"], "Chelsea": ["#034694", "#FFFFFF"], "Coventry": ["#59CBE8", "#0E1D3A"],
+    "Crystal Palace": ["#1B458F", "#C4122E"], "Everton": ["#003399", "#FFFFFF"], "Fulham": ["#111111", "#FFFFFF"],
+    "Huddersfield": ["#0E63AD", "#FFFFFF"], "Hull": ["#F5A12D", "#111111"], "Ipswich": ["#3A64A3", "#FFFFFF"],
+    "Leeds": ["#1D428A", "#FFCD00"], "Leicester": ["#003090", "#FDBE11"], "Liverpool": ["#C8102E", "#00B2A9"],
+    "Luton": ["#F78F1E", "#002D62"], "Manchester City": ["#6CABDD", "#1C2C5B"], "Manchester United": ["#DA291C", "#FBE122"],
+    "Middlesbrough": ["#E11B22", "#FFFFFF"], "Newcastle United": ["#241F20", "#FFFFFF"], "Norwich": ["#00A650", "#FFF200"],
+    "Nottingham Forest": ["#DD0000", "#FFFFFF"], "Queens Park Rangers": ["#1D5BA4", "#FFFFFF"], "Sheffield United": ["#EE2737", "#111111"],
+    "Southampton": ["#D71920", "#130C0E"], "Stoke": ["#E03A3E", "#FFFFFF"], "Sunderland": ["#EB172B", "#211E1E"],
+    "Swansea": ["#121212", "#FFFFFF"], "Tottenham": ["#132257", "#FFFFFF"], "Watford": ["#FBEE23", "#ED2127"],
+    "West Bromwich Albion": ["#122F67", "#FFFFFF"], "West Ham": ["#7A263A", "#1BB1E7"], "Wolverhampton Wanderers": ["#FDB913", "#231F20"],
+  };
+  const hexRgb = h => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const lum = h => { const [r, g, b] = hexRgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * r + .7152 * g + .0722 * b; };
+  const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  const mix = (a, b, t) => "#" + hexRgb(a).map((v, i) => Math.round(v + (hexRgb(b)[i] - v) * t).toString(16).padStart(2, "0")).join("");
+  const chroma = h => { const a = hexRgb(h); return (Math.max(...a) - Math.min(...a)) / 255; };
+  const cdist = (a, b) => { const x = hexRgb(a), y = hexRgb(b); return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]); };
+  function readable(c1, c2, bg, toward) {
+    if (contrast(c1, bg) >= 3.2) return c1;
+    if (chroma(c2) > .25 && contrast(c2, bg) >= 3.2) return c2;
+    for (let t = .1; t <= 1; t += .1) { const m = mix(c1, toward, t); if (contrast(m, bg) >= 3.2) return m; }
+    return toward;
+  }
+  const LIGHT_BG = "#fafcf8", DARK_BG = "#15201a";
+  const cols = tid => TC[(TM[tid] || {}).n] || ["#13201a", "#1f6a3d"];
+  const onColor = c1 => contrast(c1, "#ffffff") >= 3 ? "#ffffff" : "#13201a";
+  function teamStyle(tid) {
+    const [c1, c2] = cols(tid);
+    return `--tc1:${c1};--tc2:${c2};--tc-on:${onColor(c1)};--tcl:${readable(c1, c2, LIGHT_BG, "#000000")};--tcd:${readable(c1, c2, DARK_BG, "#ffffff")}`;
+  }
+  const tdot = tid => { const c = cols(tid); return `<i class="tdot" style="--c1:${c[0]};--c2:${c[1]}" aria-hidden="true"></i>`; };
+
+  /* ===== Data ===== */
+  let D, TM = {}, PL = [], PLI = {}, MT = [], MTI = {};
+  let SHOTS = [], SH_BY_M = {}, SH_BY_P = {}, APPS = [], AP_BY_M = {}, AP_BY_P = {}, EXTRA_OK = false;
+  const POS = { GK: ["BR", "brankář", "Brankáři"], D: ["OB", "obránce", "Obránci"], M: ["ZÁ", "záložník", "Záložníci"], F: ["ÚT", "útočník", "Útočníci"] };
+  const posKey = p => { const s = String(p || "").split(" ")[0]; return s === "GK" ? "GK" : s[0] === "D" ? "D" : s[0] === "M" ? "M" : s[0] === "F" ? "F" : (String(p).includes("M") ? "M" : "M"); };
+  const RES = ["Gól", "Chycená", "Mimo", "Zblokovaná", "Tyč", "Vlastní gól"];
+  const SIT = ["ze hry", "po rohu", "standardka", "přímý kop", "penalta"];
+  const TYP = ["pravou", "levou", "hlavou", "jinak"];
+  const RPOS = { GK: "BR", DR: "PO", DC: "SO", DL: "LO", DMR: "PDZ", DMC: "DZ", DML: "LDZ", MR: "PZ", MC: "SZ", ML: "LZ", AMR: "PK", AMC: "OZ", AML: "LK", FWR: "PÚ", FW: "ÚT", FWL: "LÚ", Sub: "NÁH" };
+  const RPOS_T = { BR: "brankář", PO: "pravý obránce", SO: "střední obránce", LO: "levý obránce", PDZ: "pravý defenzivní záložník", DZ: "defenzivní záložník", LDZ: "levý defenzivní záložník", PZ: "pravý záložník", SZ: "střední záložník", LZ: "levý záložník", PK: "pravé křídlo", OZ: "ofenzivní záložník", LK: "levé křídlo", "PÚ": "pravý útočník", "ÚT": "útočník", "LÚ": "levý útočník", "NÁH": "náhradník" };
+
+  const utc = d => new Date(d.replace(" ", "T") + ":00Z");
+  const dfmt = (d, o) => utc(d).toLocaleString("cs-CZ", Object.assign({ timeZone: "Europe/Prague" }, o));
+  const dShort = d => dfmt(d, { day: "numeric", month: "numeric" }).replace(/\s/g, "");
+  const dLong = d => dfmt(d, { weekday: "long", day: "numeric", month: "long" });
+  const tOnly = d => dfmt(d, { hour: "2-digit", minute: "2-digit" });
+  const dayKey = d => utc(d).toLocaleDateString("sv-SE", { timeZone: "Europe/Prague" });
+
+  function resultFor(m, tid) {
+    if (!m.r) return null;
+    const my = m.h === tid ? m.gh : m.ga, op = m.h === tid ? m.ga : m.gh;
+    return my > op ? "W" : my < op ? "L" : "D";
+  }
+  const RLAB = { W: "V", D: "R", L: "P" }, RTXT = { W: "výhra", D: "remíza", L: "prohra" };
+  const teamMatches = tid => MT.filter(m => m.h === tid || m.a === tid);
+
+  /* ===== Generická řaditelná tabulka ===== */
+  function sortTable(box, colsDef, rows, state, opts = {}) {
+    const col = colsDef.find(c => c.k === state.k) || colsDef[0];
+    const dir = state.asc ? 1 : -1;
+    const val = r => col.v ? col.v(r) : r[col.k];
+    const sorted = rows.slice().sort((a, b) => {
+      const x = val(a), y = val(b);
+      if (typeof x === "string" || typeof y === "string") return dir * String(x ?? "").localeCompare(String(y ?? ""), "cs");
+      return dir * ((x ?? -Infinity) - (y ?? -Infinity)) || (opts.tie ? opts.tie(a, b) : 0);
+    });
+    const head = colsDef.map(c => `<th class="${c.cls || ""}${c.k === col.k ? " sorted" + (state.asc ? " asc" : "") : ""}" title="${esc(c.t || "")}">${c.nosort ? esc(c.l) : `<button type="button" data-k="${c.k}">${esc(c.l)}</button>`}</th>`).join("");
+    const body = sorted.map((r, i) => `<tr class="click ${opts.rowCls ? opts.rowCls(r, i) : ""}" data-key="${opts.key(r)}">${colsDef.map(c => `<td class="${c.cls || ""}${c.tc ? " " + c.tc(r) : ""}">${c.f ? c.f(r, i) : (r[c.k] ?? "–")}</td>`).join("")}</tr>`).join("");
+    box.innerHTML = sorted.length ? `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>` : `<div class="empty">Žádný hráč neodpovídá filtrům.</div>`;
+    box.querySelectorAll("th button").forEach(b => b.addEventListener("click", () => {
+      const k = b.dataset.k, c = colsDef.find(x => x.k === k);
+      if (state.k === k) state.asc = !state.asc; else { state.k = k; state.asc = !!c.asc; }
+      sortTable(box, colsDef, rows, state, opts);
+    }));
+    return sorted;
+  }
+  document.addEventListener("click", e => {
+    const tr = e.target.closest("tr[data-key]");
+    if (tr && !e.target.closest("button,a")) { openKey(tr.dataset.key); return; }
+    const t = e.target.closest("[data-open]");
+    if (t) { e.preventDefault(); openKey(t.dataset.open); }
+  });
+
+  /* ===== Lídři ===== */
+  function renderLeaders() {
+    const sk = PL.filter(p => p.min > 0);
+    const best = (f, n = 0, lbl) => {
+      const p = sk.slice().sort((a, b) => f(b) - f(a) || b.g - a.g)[0];
+      return p ? `<button type="button" class="lead" data-open="p${p.id}"><span class="lbl">${lbl}</span><span class="val">${n ? fmt(f(p), n) : f(p)}</span><span class="who">${esc(p.n)}</span><span class="tm">${tdot(p.t[0])}${esc((TM[p.t[0]] || {}).n || "")}</span></button>` : "";
+    };
+    $("#leaders").innerHTML = best(p => p.g, 0, "Góly") + best(p => p.a, 0, "Asistence") + best(p => p.xg, 1, "Očekávané góly (xG)") +
+      best(p => p.xa, 1, "Očekávané asistence (xA)") + best(p => p.g + p.a, 0, "Góly + asistence");
+  }
+
+  /* ===== Tabulka ===== */
+  let tbMode = "all";
+  const tbState = { k: "rank", asc: true };
+  function tableRows(mode) {
+    if (mode === "all") {
+      const rows = Object.values(TM).map(t => Object.assign({}, t, { gd: t.gf - t.ga, xgd: t.xg - t.xga, dx: t.pts - t.xpts }));
+      rows.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.n.localeCompare(b.n));
+      rows.forEach((r, i) => { r.rank = i + 1; r.form = teamMatches(r.id).filter(m => m.r).slice(-5); });
+      return rows;
+    }
+    const acc = {};
+    Object.values(TM).forEach(t => acc[t.id] = { id: t.id, n: t.n, z: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, xg: 0, xga: 0, form: [] });
+    MT.filter(m => m.r).forEach(m => {
+      const tid = mode === "h" ? m.h : m.a, r = acc[tid];
+      const my = mode === "h" ? m.gh : m.ga, op = mode === "h" ? m.ga : m.gh;
+      r.z++; r.gf += my; r.ga += op; r.xg += mode === "h" ? m.xh : m.xa; r.xga += mode === "h" ? m.xa : m.xh;
+      if (my > op) { r.w++; r.pts += 3; } else if (my === op) { r.d++; r.pts++; } else r.l++;
+      r.form.push(m);
+    });
+    const rows = Object.values(acc).map(r => Object.assign(r, { gd: r.gf - r.ga, xgd: r.xg - r.xga, xpts: null, dx: null, form: r.form.slice(-5) }));
+    rows.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.n.localeCompare(b.n));
+    rows.forEach((r, i) => r.rank = i + 1);
+    return rows;
+  }
+  const formHTML = (ms, tid) => `<span class="form">${ms.map(m => { const r = resultFor(m, tid), op = TM[m.h === tid ? m.a : m.h]; return `<b class="${r}" data-open="z${m.id}" title="${esc((m.h === tid ? "doma s " : "venku s ") + (op ? op.n : ""))} ${m.gh}:${m.ga}">${RLAB[r]}</b>`; }).join("")}</span>`;
+  function renderTable() {
+    const rows = tableRows(tbMode);
+    const all = tbMode === "all";
+    const C = [
+      { k: "rank", l: "#", cls: "stick1", asc: true },
+      { k: "n", l: "Tým", cls: "l stick2", asc: true, f: r => `${tdot(r.id)}<span class="name">${esc(r.n)}</span>` },
+      { k: "z", l: "Z", t: "Zápasy" }, { k: "w", l: "V", t: "Výhry" }, { k: "d", l: "R", t: "Remízy" }, { k: "l", l: "P", t: "Prohry" },
+      { k: "gf", l: "Skóre", t: "Vstřelené : obdržené góly", f: r => `${r.gf}:${r.ga}` },
+      { k: "gd", l: "+/−", t: "Rozdíl skóre", f: r => sgn(r.gd, 0), tc: r => pm(r.gd) },
+      { k: "pts", l: "Body", cls: "pts" },
+      { k: "xg", l: "xG", cls: "sep", t: "Očekávané vstřelené góly", f: r => fmt(r.xg) },
+      { k: "xga", l: "xGA", t: "Očekávané obdržené góly", f: r => fmt(r.xga) },
+      { k: "xgd", l: "xGD", t: "Rozdíl xG a xGA", f: r => sgn(r.xgd), tc: r => pm(r.xgd) },
+    ];
+    if (all) C.push({ k: "xpts", l: "xPts", t: "Očekávané body podle šancí", f: r => fmt(r.xpts) }, { k: "dx", l: "Body − xPts", t: "Kolik bodů tým uhrál navíc oproti šancím", f: r => sgn(r.dx), tc: r => pm(r.dx) });
+    C.push({ k: "form", l: "Posledních 5", cls: "l sep", nosort: true, f: r => formHTML(r.form, r.id) });
+    sortTable($("#tb-box"), C, rows, tbState, { key: r => "t" + r.id, rowCls: r => all && r.rank <= 4 ? "zcl" : all && r.rank >= 18 ? "zrel" : "" });
+    const k = Math.max(0, ...MT.filter(m => m.r).map(m => m.k));
+    $("#tb-count").textContent = all ? `Po ${k}. kole` : tbMode === "h" ? "Jen domácí zápasy" : "Jen zápasy venku";
+  }
+
+  /* ===== Hráči ===== */
+  let plMode = "basic";
+  const plState = { k: "g", asc: false };
+  const per90 = (x, m) => m > 0 ? x / m * 90 : null;
+  function playerCols() {
+    const base = [
+      { k: "i", l: "#", cls: "stick1", nosort: true, f: (r, i) => i + 1 },
+      { k: "n", l: "Hráč", cls: "l stick2", asc: true, f: r => `<span class="name">${esc(r.n)}</span><span class="chip" title="${POS[posKey(r.pos)][1]}">${POS[posKey(r.pos)][0]}</span>` },
+      { k: "tn", l: "Tým", cls: "l", asc: true, f: r => `${tdot(r.t[0])}${esc(r.tn)}${r.t.length > 1 ? ` <span class="sm">+${r.t.length - 1}</span>` : ""}` },
+      { k: "gp", l: "Z", t: "Zápasy" }, { k: "min", l: "Min", t: "Odehrané minuty" },
+    ];
+    if (plMode === "basic") return base.concat([
+      { k: "g", l: "G", t: "Góly", cls: "pts" }, { k: "a", l: "A", t: "Asistence" }, { k: "ga", l: "G+A", t: "Góly + asistence", v: r => r.g + r.a, f: r => r.g + r.a },
+      { k: "npg", l: "G bez pen.", t: "Góly bez penalt" }, { k: "sh", l: "Střely" }, { k: "kp", l: "Klíč. přihr.", t: "Klíčové přihrávky (přihrávky před střelou)" },
+      { k: "yc", l: "ŽK", t: "Žluté karty" }, { k: "rc", l: "ČK", t: "Červené karty" },
+    ]);
+    if (plMode === "xg") return base.concat([
+      { k: "g", l: "G", t: "Góly", cls: "sep" }, { k: "xg", l: "xG", t: "Očekávané góly", f: r => fmt(r.xg), cls: "pts" },
+      { k: "gx", l: "G − xG", t: "Góly minus xG: kladné = střílí lépe, než odpovídá šancím", v: r => r.g - r.xg, f: r => sgn(r.g - r.xg), tc: r => pm(r.g - r.xg) },
+      { k: "npxg", l: "npxG", t: "xG bez penalt", f: r => fmt(r.npxg) },
+      { k: "xgsh", l: "xG/střela", t: "Průměrná kvalita šance", v: r => r.sh ? r.xg / r.sh : null, f: r => r.sh ? fmt(r.xg / r.sh, 2) : "–" },
+      { k: "a", l: "A", t: "Asistence", cls: "sep" }, { k: "xa", l: "xA", t: "Očekávané asistence", f: r => fmt(r.xa) },
+      { k: "ax", l: "A − xA", t: "Asistence minus xA", v: r => r.a - r.xa, f: r => sgn(r.a - r.xa), tc: r => pm(r.a - r.xa) },
+      { k: "xgc", l: "xGChain", t: "xG všech útoků, kterých se hráč účastnil", f: r => fmt(r.xgc), cls: "sep" },
+      { k: "xgb", l: "xGBuildup", t: "xGChain bez střel a posledních přihrávek – podíl na rozehrávce", f: r => fmt(r.xgb) },
+    ]);
+    const p = k => ({ v: r => per90(r[k], r.min), f: r => fmt(per90(r[k], r.min), 2) });
+    return base.concat([
+      Object.assign({ k: "g90", l: "G/90", t: "Góly na 90 minut", cls: "sep pts" }, p("g")),
+      Object.assign({ k: "xg90", l: "xG/90", t: "xG na 90 minut" }, p("xg")),
+      Object.assign({ k: "npxg90", l: "npxG/90", t: "xG bez penalt na 90 minut" }, p("npxg")),
+      Object.assign({ k: "a90", l: "A/90", t: "Asistence na 90 minut", cls: "sep" }, p("a")),
+      Object.assign({ k: "xa90", l: "xA/90", t: "xA na 90 minut" }, p("xa")),
+      Object.assign({ k: "sh90", l: "Střely/90", cls: "sep" }, p("sh")),
+      Object.assign({ k: "kp90", l: "Klíč. přihr./90" }, p("kp")),
+      Object.assign({ k: "xgc90", l: "xGChain/90", cls: "sep" }, p("xgc")),
+      Object.assign({ k: "xgb90", l: "xGBuildup/90" }, p("xgb")),
+    ]);
+  }
+  function renderPlayers() {
+    const q = norm($("#pl-q").value.trim()), team = $("#pl-team").value, pos = $("#pl-pos").value;
+    let mn = Math.max(0, +$("#pl-min").value || 0);
+    let rows = PL.filter(p => p.min > 0 && (!q || norm(p.n).includes(q)) && (!team || p.t.includes(team)) && (!pos || posKey(p.pos) === pos) && p.min >= mn);
+    const C = playerCols();
+    if (!C.find(c => c.k === plState.k)) { plState.k = plMode === "basic" ? "g" : plMode === "xg" ? "xg" : "xg90"; plState.asc = false; }
+    sortTable($("#pl-box"), C, rows, plState, { key: r => "p" + r.id, tie: (a, b) => b.min - a.min });
+    $("#pl-count").textContent = rows.length + " " + plural(rows.length, "hráč", "hráči", "hráčů");
+    $("#pl-legend").innerHTML = plMode === "p90" ? `<span>Hodnoty na 90 minut jsou u hráčů s malým počtem minut nespolehlivé. Nastavte si raději „Min. minut“, třeba 450.</span>` :
+      plMode === "xg" ? `<span>xG (očekávané góly) vyjadřuje, kolik gólů by z daných šancí dal průměrný hráč. xA (očekávané asistence) je xG střel po hráčových přihrávkách.</span>` : `<span>Klikněte na hráče pro detail, mapu střel a formu.</span>`;
+  }
+
+  /* ===== Týmy (pokročilé) ===== */
+  const tmState = { k: "xgd", asc: false };
+  function renderTeams() {
+    const rank = {}; tableRows("all").forEach(r => rank[r.id] = r.rank);
+    const shotsFor = {}, shotsAg = {};
+    SHOTS.forEach(s => { const m = MTI[s.m]; if (!m) return; const f = s.side ? m.a : m.h, a = s.side ? m.h : m.a; shotsFor[f] = (shotsFor[f] || 0) + 1; shotsAg[a] = (shotsAg[a] || 0) + 1; });
+    const rows = Object.values(TM).map(t => Object.assign({}, t, { rank: rank[t.id], xgd: t.xg - t.xga, sf: shotsFor[t.id], sa: shotsAg[t.id] }));
+    const pz = (k, n = 2) => ({ v: r => r.z ? r[k] / r.z : null, f: r => r.z ? fmt(r[k] / r.z, n) : "–" });
+    const C = [
+      { k: "rank", l: "#", cls: "stick1", asc: true, t: "Místo v tabulce" },
+      { k: "n", l: "Tým", cls: "l stick2", asc: true, f: r => `${tdot(r.id)}<span class="name">${esc(r.n)}</span>` },
+      { k: "z", l: "Z" },
+      { k: "xg", l: "xG", cls: "sep", f: r => fmt(r.xg) }, { k: "xga", l: "xGA", f: r => fmt(r.xga) },
+      { k: "xgd", l: "xGD", f: r => sgn(r.xgd), tc: r => pm(r.xgd), cls: "pts" },
+      Object.assign({ k: "xgz", l: "xG/zápas", cls: "sep" }, pz("xg")), Object.assign({ k: "xgaz", l: "xGA/zápas", asc: true }, pz("xga")),
+      { k: "npxg", l: "npxG", cls: "sep", f: r => fmt(r.npxg) }, { k: "npxga", l: "npxGA", f: r => fmt(r.npxga), asc: true },
+      { k: "sf", l: "Střely", cls: "sep", f: r => r.sf ?? "–" }, { k: "sa", l: "Střely proti", f: r => r.sa ?? "–", asc: true },
+      { k: "ppda", l: "PPDA", cls: "sep", asc: true, t: "Přihrávky soupeře na jeden obranný zákrok – nižší = vyšší presink", f: r => fmt(r.ppda, 1) },
+      { k: "oppda", l: "PPDA soupeřů", t: "Jak moc presují soupeři proti týmu", f: r => fmt(r.oppda, 1) },
+      { k: "deep", l: "Deep", cls: "sep", t: "Přihrávky do prostoru do 20 m od branky" }, { k: "deepa", l: "Deep proti", asc: true },
+      { k: "pts", l: "Body", cls: "sep" }, { k: "xpts", l: "xPts", f: r => fmt(r.xpts) },
+    ];
+    sortTable($("#tm-box"), C, rows, tmState, { key: r => "t" + r.id });
+  }
+
+  /* ===== Zápasy ===== */
+  let rdK = 1;
+  function gameCard(m, showRound) {
+    const h = TM[m.h], a = TM[m.a];
+    const meta = (showRound ? `${m.k}. kolo · ${dShort(m.d)} · ` : "") + tOnly(m.d);
+    if (!m.r) {
+      const fc = m.fc ? `<div class="gm">Odhad: výhra domácích ${Math.round(m.fc[0] * 100)} % · remíza ${Math.round(m.fc[1] * 100)} % · výhra hostů ${Math.round(m.fc[2] * 100)} %</div>` : "";
+      return `<div class="game"><span class="gt">${tdot(m.h)}${esc(h.n)}</span><span class="sc up">${tOnly(m.d)}</span><span class="gt a">${esc(a.n)} ${tdot(m.a)}</span>${showRound ? `<div class="gm">${m.k}. kolo · ${dLong(m.d)}</div>` : ""}${fc}</div>`;
+    }
+    const tot = m.xh + m.xa || 1, [hc] = cols(m.h), [ac] = cols(m.a);
+    return `<button type="button" class="game" data-open="z${m.id}"><span class="gt">${tdot(m.h)}${esc(h.n)}</span><span class="sc">${m.gh}:${m.ga}</span><span class="gt a">${esc(a.n)} ${tdot(m.a)}</span>
+      <div class="gx"><span>xG ${fmt(m.xh, 2)}</span><span class="xbar"><i style="width:${m.xh / tot * 100}%;background:var(--red)"></i><i style="width:${m.xa / tot * 100}%;background:var(--blue)"></i></span><span>${fmt(m.xa, 2)}</span></div>
+      <div class="gm">${esc(meta)}</div></button>`;
+  }
+  function renderRound() {
+    const team = $("#rd-team").value;
+    let list, showRound = false;
+    if (team) { list = teamMatches(team); showRound = true; }
+    else list = MT.filter(m => m.k === rdK);
+    $("#rd-sel").value = rdK; $("#rd-prev").disabled = !!team || rdK <= 1; $("#rd-next").disabled = !!team || rdK >= 38; $("#rd-sel").disabled = !!team;
+    if (team) {
+      const done = list.filter(m => m.r), up = list.filter(m => !m.r);
+      $("#rd-days").innerHTML = (done.length ? `<div class="day"><h3>Odehrané zápasy (${done.length})</h3><div class="games">${done.slice().reverse().map(m => gameCard(m, true)).join("")}</div></div>` : "") +
+        (up.length ? `<div class="day"><h3>Program (${up.length})</h3><div class="games">${up.map(m => gameCard(m, true)).join("")}</div></div>` : "");
+      return;
+    }
+    const days = {};
+    list.forEach(m => (days[dayKey(m.d)] = days[dayKey(m.d)] || []).push(m));
+    $("#rd-days").innerHTML = Object.keys(days).sort().map(k => `<div class="day"><h3>${esc(dLong(days[k][0].d))}</h3><div class="games">${days[k].map(m => gameCard(m)).join("")}</div></div>`).join("") || `<div class="empty">V tomto kole nejsou žádné zápasy.</div>`;
+  }
+
+  /* ===== Hřiště ===== */
+  // Understat: X = 0…1 po délce hřiště směrem k bráně soupeře, Y = 0…1 po šířce. Hřiště kreslíme 105 × 68 m.
+  const PITCH_FULL = '<rect x="0" y="0" width="105" height="68" class="turf"/><line x1="52.5" y1="0" x2="52.5" y2="68" class="pl"/><circle cx="52.5" cy="34" r="9.15" class="pl"/><circle cx="52.5" cy="34" r=".5" class="pd"/>' +
+    '<rect x="0" y="13.84" width="16.5" height="40.32" class="pl"/><rect x="88.5" y="13.84" width="16.5" height="40.32" class="pl"/><rect x="0" y="24.84" width="5.5" height="18.32" class="pl"/><rect x="99.5" y="24.84" width="5.5" height="18.32" class="pl"/>' +
+    '<circle cx="11" cy="34" r=".5" class="pd"/><circle cx="94" cy="34" r=".5" class="pd"/><path d="M16.5 26.69 A9.15 9.15 0 0 1 16.5 41.31" class="pl"/><path d="M88.5 26.69 A9.15 9.15 0 0 0 88.5 41.31" class="pl"/>' +
+    '<rect x="-1.6" y="30.34" width="1.6" height="7.32" class="pl"/><rect x="105" y="30.34" width="1.6" height="7.32" class="pl"/>';
+  const PITCH_HALF = '<rect x="0" y="0" width="68" height="52.5" class="turf"/><rect x="13.84" y="0" width="40.32" height="16.5" class="pl"/><rect x="24.84" y="0" width="18.32" height="5.5" class="pl"/><circle cx="34" cy="11" r=".5" class="pd"/>' +
+    '<path d="M26.69 16.5 A9.15 9.15 0 0 0 41.31 16.5" class="pl"/><path d="M24.85 52.5 A9.15 9.15 0 0 1 43.15 52.5" class="pl"/><rect x="30.34" y="-1.6" width="7.32" height="1.6" class="pl"/>';
+  const rad = xg => (0.7 + 3.3 * Math.sqrt(Math.max(0, xg))).toFixed(2);
+  let SHOTREG = {}, shotSeq = 0;
+  function shotText(s) {
+    const m = MTI[s.m], p = PLI[s.pid];
+    const opp = m ? TM[s.side ? m.h : m.a] : null;
+    return `<b>${s.min}′ ${esc(p ? p.n : "Neznámý hráč")}</b> · ${RES[s.res] || ""}, ${SIT[s.sit] || ""}, ${s.type < 3 ? TYP[s.type] + (s.type === 2 ? "" : " nohou") : "jinou částí těla"} · xG ${fmt(s.xg, 2)}${s.ast ? ` · přihrál ${esc(s.ast)}` : ""}${opp ? ` · proti ${esc(opp.n)}` : ""}`;
+  }
+  function halfMap(shots, color, id) {
+    const reg = SHOTREG[id] = shots.slice().sort((a, b) => b.xg - a.xg);
+    const marks = reg.map((s, i) => { const x = (1 - s.y) * 68, y = (1 - s.x) * 105; const c = s.res === 5 ? "var(--muted)" : color; return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad(s.xg)}" class="sh${s.res === 0 ? " goal" : ""}" style="fill:${c};stroke:${s.res === 0 ? "" : c}" data-sm="${id}:${i}"><title>${esc(shotText(s).replace(/<[^>]+>/g, ""))}</title></circle>`; }).join("");
+    return `<div class="pitch half"><svg viewBox="-2 -3 72 57" role="img" aria-label="Mapa střel">${PITCH_HALF}${marks}</svg></div><div class="shotinfo" id="si-${id}">${reg.length ? "Klikněte nebo najeďte na kruh pro podrobnosti o střele." : "Zatím žádné střely."}</div>`;
+  }
+  function fullMap(shots, id) {
+    const reg = SHOTREG[id] = shots.slice().sort((a, b) => b.xg - a.xg);
+    const marks = reg.map((s, i) => {
+      const x = s.side ? (1 - s.x) * 105 : s.x * 105, y = s.side ? s.y * 68 : (1 - s.y) * 68;
+      const c = s.side ? "var(--ga)" : "var(--gh)";
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad(s.xg)}" class="sh${s.res === 0 || s.res === 5 ? " goal" : ""}" style="fill:${c};stroke:${s.res === 0 || s.res === 5 ? "" : c}" data-sm="${id}:${i}"><title>${esc(shotText(s).replace(/<[^>]+>/g, ""))}</title></circle>`;
+    }).join("");
+    return `<div class="pitch full"><svg viewBox="-3 -2 111 72" role="img" aria-label="Mapa střel zápasu">${PITCH_FULL}${marks}</svg></div><div class="shotinfo" id="si-${id}">Klikněte nebo najeďte na kruh pro podrobnosti o střele.</div>`;
+  }
+  function shotPick(e) {
+    const c = e.target.closest("[data-sm]"); if (!c) return;
+    const [id, i] = c.dataset.sm.split(":"); const s = (SHOTREG[id] || [])[+i]; if (!s) return;
+    c.closest("svg").querySelectorAll(".sel").forEach(x => x.classList.remove("sel")); c.classList.add("sel");
+    const box = document.getElementById("si-" + id); if (box) box.innerHTML = shotText(s);
+  }
+  const pitchSum = shots => {
+    const g = shots.filter(s => s.res === 0).length, xg = shots.reduce((t, s) => t + s.xg, 0);
+    return `<div class="pitchsum"><div><b>${shots.length}</b><span>Střely</span></div><div><b>${g}</b><span>Góly</span></div><div><b>${fmt(xg)}</b><span>xG</span></div><div><b>${shots.length ? fmt(xg / shots.length, 2) : "–"}</b><span>xG na střelu</span></div></div>`;
+  };
+
+  /* ===== Grafy ===== */
+  function barChart(items, opts) {
+    // items: [{a, b, lab, title}] – dva sloupce (a nahoře plně, b průhledně) a klouzavý průměr a+b
+    const W = Math.max(420, Math.min(opts.w || 640, window.innerWidth - 60)), H = opts.h || 190, L = 34, B = 24, T = 16, n = items.length;
+    if (!n) return `<p class="note">Zatím žádné zápasy.</p>`;
+    const top = Math.max(opts.min || 1, ...items.map(i => opts.stack ? i.a + i.b : Math.max(i.a, i.b)));
+    const step = [0.25, 0.5, 1, 2, 5].find(s => top / s <= 4) || 10, max = Math.ceil(top / step) * step * 1.08;
+    const bw = (W - L) / n, y = v => T + (H - T - B) * (1 - v / max);
+    const ticks = []; for (let v = 0; v <= max / 1.08 + 1e-9; v += step) ticks.push(+v.toFixed(2));
+    let out = ticks.map(v => `<line x1="${L}" x2="${W}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="grid"/><text x="${L - 5}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end">${fmt(v, v % 1 ? (step < 0.5 ? 2 : 1) : 0)}</text>`).join("");
+    items.forEach((it, i) => {
+      const x = L + i * bw + bw * .15, w = bw * .7;
+      if (opts.stack) {
+        out += `<rect x="${x.toFixed(1)}" y="${y(it.a).toFixed(1)}" width="${w.toFixed(1)}" height="${(y(0) - y(it.a)).toFixed(1)}" style="fill:${opts.ca}"><title>${esc(it.title)}</title></rect>`;
+        out += `<rect x="${x.toFixed(1)}" y="${y(it.a + it.b).toFixed(1)}" width="${w.toFixed(1)}" height="${(y(it.a) - y(it.a + it.b)).toFixed(1)}" style="fill:${opts.cb}"><title>${esc(it.title)}</title></rect>`;
+      } else {
+        out += `<rect x="${x.toFixed(1)}" y="${y(it.a).toFixed(1)}" width="${(w / 2).toFixed(1)}" height="${(y(0) - y(it.a)).toFixed(1)}" style="fill:${opts.ca}"><title>${esc(it.title)}</title></rect>`;
+        out += `<rect x="${(x + w / 2).toFixed(1)}" y="${y(it.b).toFixed(1)}" width="${(w / 2).toFixed(1)}" height="${(y(0) - y(it.b)).toFixed(1)}" style="fill:${opts.cb}"><title>${esc(it.title)}</title></rect>`;
+      }
+      if (it.mark) out += `<text x="${(x + w / 2).toFixed(1)}" y="${(y(opts.stack ? it.a + it.b : Math.max(it.a, it.b)) - 3).toFixed(1)}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${esc(it.mark)}</text>`;
+      if (n <= 20 || i % Math.ceil(n / 19) === 0) out += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 7}" text-anchor="middle">${esc(it.lab)}</text>`;
+    });
+    if (opts.avg && n >= 3) {
+      const pts = items.map((it, i) => { const sl = items.slice(Math.max(0, i - 4), i + 1); const v = sl.reduce((t, s) => t + opts.avg(s), 0) / sl.length; return `${(L + i * bw + bw / 2).toFixed(1)},${y(v).toFixed(1)}`; });
+      out += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--ink)" stroke-width="2" stroke-dasharray="5 3"/>`;
+    }
+    out += `<line x1="${L}" x2="${W}" y1="${y(0)}" y2="${y(0)}" class="axis"/>`;
+    return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label)}">${out}</svg></div>`;
+  }
+  function flowChart(m, shots) {
+    const W = Math.max(420, Math.min(640, window.innerWidth - 60)), H = 200, L = 34, B = 24, T = 10;
+    const end = Math.max(95, ...shots.map(s => s.min + 1));
+    const series = side => { const p = [[0, 0]]; let c = 0; shots.filter(s => s.side === side).sort((a, b) => a.min - b.min).forEach(s => { p.push([s.min, c]); c += s.xg; p.push([s.min, c]); }); p.push([end, c]); return p; };
+    const hs = series(0), as = series(1);
+    const max = Math.max(1, hs[hs.length - 1][1], as[as.length - 1][1]) * 1.12;
+    const x = t => L + (W - L - 8) * t / end, y = v => T + (H - T - B) * (1 - v / max);
+    let out = [0, 15, 30, 45, 60, 75, 90].map(t => `<line x1="${x(t).toFixed(1)}" x2="${x(t).toFixed(1)}" y1="${T}" y2="${H - B}" class="grid"/><text x="${x(t).toFixed(1)}" y="${H - 7}" text-anchor="middle">${t}′</text>`).join("");
+    for (let v = 0.5; v < max; v += max > 3 ? 1 : 0.5) out += `<line x1="${L}" x2="${W - 8}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="grid"/><text x="${L - 5}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end">${fmt(v, v % 1 ? 1 : 0)}</text>`;
+    const line = (p, c) => `<polyline points="${p.map(([t, v]) => x(t).toFixed(1) + "," + y(v).toFixed(1)).join(" ")}" fill="none" style="stroke:${c}" stroke-width="2.6" stroke-linejoin="round"/>`;
+    out += line(hs, "var(--gh)") + line(as, "var(--ga)");
+    shots.filter(s => s.res === 0 || s.res === 5).forEach(s => {
+      const serie = s.side ? as : hs; let v = 0; for (const [t, c] of serie) if (t <= s.min) v = c;
+      const p = PLI[s.pid];
+      out += `<circle cx="${x(s.min).toFixed(1)}" cy="${y(v).toFixed(1)}" r="5" style="fill:${s.side ? "var(--ga)" : "var(--gh)"};stroke:var(--board)" stroke-width="1.5"><title>${s.min}′ gól: ${esc(p ? p.n : "")}${s.res === 5 ? " (vlastní)" : ""}</title></circle>`;
+    });
+    out += `<line x1="${L}" x2="${W - 8}" y1="${y(0)}" y2="${y(0)}" class="axis"/>`;
+    return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Průběh xG během zápasu">${out}</svg></div>`;
+  }
+
+  /* ===== Široký panel: navigace ===== */
+  let lastFocus = null, navStack = [], navBack = false;
+  function openDrawer(html, style, key) {
+    const dr = $("#drawer");
+    if (dr.hidden) { lastFocus = document.activeElement; navStack = []; }
+    if (!navBack && key && navStack[navStack.length - 1] !== key) navStack.push(key);
+    dr.setAttribute("style", style);
+    dr.innerHTML = `<div class="dnav">${navStack.length > 1 ? `<button type="button" id="d-back" title="Zpět na předchozí detail">‹ Zpět</button>` : ""}<button type="button" id="d-home" title="Zavřít a přejít na úvodní stránku">Úvod</button><button type="button" class="close" id="d-close" aria-label="Zavřít">×</button></div>` + html;
+    dr.hidden = false; $("#scrim").hidden = false; dr.scrollTop = 0;
+    document.body.style.overflow = "hidden";
+    $("#d-close").focus({ preventScroll: true });
+  }
+  function openKey(k) {
+    if (!k) return;
+    if (k[0] === "t") return teamDetail(k.slice(1));
+    if (k[0] === "z") return matchDetail(+k.slice(1));
+    if (k[0] === "p") return playerDetail(+k.slice(1));
+  }
+  function drawerBack() {
+    if (navStack.length < 2) return closeDrawer();
+    navStack.pop(); navBack = true;
+    try { openKey(navStack[navStack.length - 1]); } finally { navBack = false; }
+  }
+  function closeDrawer() {
+    $("#drawer").hidden = true; $("#scrim").hidden = true; navStack = [];
+    document.body.style.overflow = "";
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  function goHome() {
+    if (!$("#drawer").hidden) closeDrawer();
+    setView("tabulka");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  $("#drawer").addEventListener("click", e => {
+    if (e.target.closest("#d-close")) return closeDrawer();
+    if (e.target.closest("#d-back")) return drawerBack();
+    if (e.target.closest("#d-home")) return goHome();
+    shotPick(e);
+  });
+  $("#drawer").addEventListener("mouseover", shotPick);
+  $("#scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#drawer").hidden) closeDrawer(); });
+
+  /* ===== Detail hráče ===== */
+  function percentiles(p) {
+    const pk = posKey(p.pos);
+    const pool = PL.filter(x => x.min >= 270 && posKey(x.pos) === pk);
+    const M = [["g", "Góly"], ["xg", "xG"], ["npxg", "xG bez penalt"], ["sh", "Střely"], ["a", "Asistence"], ["xa", "xA"], ["kp", "Klíčové přihrávky"], ["xgc", "xGChain"], ["xgb", "xGBuildup"]];
+    if (p.min < 270 || pool.length < 10) return `<p class="note">Srovnání s ostatními ukážeme, až hráč odehraje aspoň 270 minut.</p>`;
+    return `<p class="note">Percentil na 90 minut mezi ${pool.length} hráči na pozici ${POS[pk][2].toLowerCase()} s aspoň 270 minutami. 90 = lepší než 90 % z nich.</p>` + M.map(([k, l]) => {
+      const v = p[k] / p.min * 90, below = pool.filter(x => x[k] / x.min * 90 < v).length, pc = Math.round(below / (pool.length - 1 || 1) * 100);
+      return `<div class="prow"><span>${l}<small>${fmt(v, 2)} na 90 min</small></span><span class="track"><i style="width:${Math.min(100, pc)}%"></i></span><span class="v">${pc}</span></div>`;
+    }).join("");
+  }
+  function playerDetail(id) {
+    const p = PLI[id]; if (!p) return;
+    const tid = p.t[0], t = TM[tid] || {}, pk = posKey(p.pos);
+    const apps = (AP_BY_P[id] || []).slice().sort((a, b) => MTI[a.m].d.localeCompare(MTI[b.m].d));
+    const shots = SH_BY_P[id] || [];
+    const starts = apps.filter(a => a.start).length;
+    const other = p.t.slice(1).map(x => `<button type="button" class="tlink" data-open="t${x}">${esc((TM[x] || {}).n || "")}</button>`).join(", ");
+    const head = `<header class="pd-head">
+      <div class="pd-num">${POS[pk][0]}<small>${POS[pk][1]}</small></div>
+      <div class="pd-id"><div class="eyebrow">Hráč · <button type="button" class="tlink" data-open="t${tid}">${esc(t.n || "")}</button></div>
+        <h3 id="d-name">${esc(p.n)}</h3>
+        <div class="sub">Premier League ${esc(D.label)}${other ? ` · v sezoně také za ${other}` : ""}</div></div>
+      <div class="pd-bio"><span><b>Zápasy</b>${p.gp}${EXTRA_OK ? ` (${starts} v základu)` : ""}</span><span><b>Minuty</b>${p.min}</span><span><b>Střely</b>${p.sh}</span><span><b>Klíčové přihrávky</b>${p.kp}</span><span><b>Karty</b>${p.yc} žl. · ${p.rc} červ.</span></div>
+    </header>`;
+    const big = `<div class="big"><div><b>${p.g}</b><span>Góly</span></div><div><b>${p.a}</b><span>Asistence</span></div><div><b>${fmt(p.xg)}</b><span>xG</span></div><div><b>${fmt(p.xa)}</b><span>xA</span></div><div><b>${sgn(p.g - p.xg)}</b><span>G − xG</span></div></div>`;
+    const facts = `<div class="facts"><div><span>Góly bez penalt</span><b>${p.npg}</b></div><div><span>xG bez penalt</span><b>${fmt(p.npxg, 2)}</b></div><div><span>xG na 90 min</span><b>${fmt(per90(p.xg, p.min), 2)}</b></div><div><span>xA na 90 min</span><b>${fmt(per90(p.xa, p.min), 2)}</b></div><div><span>xGChain</span><b>${fmt(p.xgc, 2)}</b></div><div><span>xGBuildup</span><b>${fmt(p.xgb, 2)}</b></div><div><span>Minut na gól</span><b>${p.g ? Math.round(p.min / p.g) : "–"}</b></div><div><span>xG na střelu</span><b>${p.sh ? fmt(p.xg / p.sh, 2) : "–"}</b></div></div>`;
+    const form = barChart(apps.map(a => { const m = MTI[a.m], op = TM[a.tid === m.h ? m.a : m.h]; return { a: a.xg, b: a.xa, lab: op ? op.s : "", mark: (a.g ? a.g + "G" : "") + (a.a ? (a.g ? " " : "") + a.a + "A" : ""), title: `${dShort(m.d)} ${op ? (a.tid === m.h ? "doma s " : "venku s ") + op.n : ""}: xG ${fmt(a.xg, 2)}, xA ${fmt(a.xa, 2)}, ${a.g} G, ${a.a} A, ${a.min} min` }; }),
+      { stack: true, ca: "var(--tc-text)", cb: "color-mix(in srgb, var(--tc-text) 40%, transparent)", label: "Forma hráče", avg: s => s.a + s.b, min: .6, w: 1100, h: 230 });
+    const log = apps.slice().reverse().map(a => {
+      const m = MTI[a.m], home = a.tid === m.h, op = home ? m.a : m.h, r = resultFor(m, a.tid);
+      return `<tr class="click" data-key="z${m.id}"><td>${m.k}.</td><td class="l">${dShort(m.d)}</td><td class="l">${home ? "" : "@ "}${tdot(op)}${esc((TM[op] || {}).n || "")}</td><td class="c"><span class="res ${r}">${RLAB[r]}</span> ${home ? m.gh + ":" + m.ga : m.ga + ":" + m.gh}</td><td>${a.start ? "" : "<span class='sm'>stř.</span> "}${a.min}</td><td>${a.g || "·"}</td><td>${a.a || "·"}</td><td>${a.sh || "·"}</td><td>${fmt(a.xg, 2)}</td><td>${fmt(a.xa, 2)}</td><td>${a.kp || "·"}</td><td>${a.yc ? "ŽK" : ""}${a.rc ? " ČK" : ""}</td></tr>`;
+    }).join("");
+    const body = `<div class="pd-body">
+      <div class="pd-col">${big}<div><h4>Statistiky</h4>${facts}</div><div><h4>Srovnání s hráči na stejném postu</h4>${percentiles(p)}</div></div>
+      <div class="pd-col"><div><h4>Mapa střel</h4>${pitchSum(shots)}${halfMap(shots, "var(--tc-text)", "p" + id)}<div class="legend"><span>Velikost kruhu = kvalita šance (xG). Plný kruh = gól.</span></div></div></div>
+      <div class="pd-wide"><h4>Forma: xG a xA v jednotlivých zápasech</h4>${EXTRA_OK ? form + `<div class="legend"><span><i class="sw" style="background:var(--tc-text)"></i>xG</span><span><i class="sw" style="background:color-mix(in srgb, var(--tc-text) 40%, transparent)"></i>xA</span><span>Čárkovaná čára = průměr xG + xA za posledních 5 zápasů. Nad sloupcem góly (G) a asistence (A).</span></div>` : `<p class="note">Načítám zápasy…</p>`}</div>
+      <div class="pd-wide"><h4>Zápasy</h4>${EXTRA_OK ? `<div class="scroll"><table class="dtab"><thead><tr><th>Kolo</th><th class="l">Datum</th><th class="l">Soupeř</th><th class="c">Výsledek</th><th>Min</th><th>G</th><th>A</th><th>Střely</th><th>xG</th><th>xA</th><th>Klíč. př.</th><th></th></tr></thead><tbody>${log}</tbody></table></div>` : ""}</div>
+    </div>`;
+    openDrawer(head + body, teamStyle(tid), "p" + id);
+  }
+
+  /* ===== Detail týmu ===== */
+  function teamDetail(tid) {
+    const t = TM[tid]; if (!t) return;
+    const rows = tableRows("all"), me = rows.find(r => r.id === tid);
+    const ms = teamMatches(tid), done = ms.filter(m => m.r);
+    const away = [t.pts - t.home[0], t.z - t.home[1]];
+    const head = `<header class="pd-head">
+      <div class="pd-num">${me.rank}.<small>místo</small></div>
+      <div class="pd-id"><div class="eyebrow">Tým · Premier League ${esc(D.label)}</div><h3 id="d-name">${esc(t.n)}</h3>
+        <div class="sub">${t.w} ${plural(t.w, "výhra", "výhry", "výher")} · ${t.d} ${plural(t.d, "remíza", "remízy", "remíz")} · ${t.l} ${plural(t.l, "prohra", "prohry", "proher")} · skóre ${t.gf}:${t.ga}</div></div>
+      <div class="pd-bio"><span><b>Body doma</b>${t.home[0]} z ${t.home[1] * 3}</span><span><b>Body venku</b>${away[0]} z ${away[1] * 3}</span><span><b>xPts</b>${fmt(t.xpts)}</span><span><b>PPDA</b>${fmt(t.ppda, 1)}</span></div>
+    </header>`;
+    const big = `<div class="big"><div><b>${t.pts}</b><span>Body</span></div><div><b>${t.gf}:${t.ga}</b><span>Skóre</span></div><div><b>${fmt(t.xg)}</b><span>xG</span></div><div><b>${fmt(t.xga)}</b><span>xGA</span></div><div><b>${sgn(t.pts - t.xpts)}</b><span>Body − xPts</span></div></div>`;
+    const chart = barChart(done.map(m => { const h = m.h === tid, op = TM[h ? m.a : m.h]; return { a: h ? m.xh : m.xa, b: h ? m.xa : m.xh, lab: op ? op.s : "", mark: RLAB[resultFor(m, tid)], title: `${dShort(m.d)} ${h ? "doma s" : "venku s"} ${op ? op.n : ""} ${m.gh}:${m.ga} · xG ${fmt(h ? m.xh : m.xa, 2)} : ${fmt(h ? m.xa : m.xh, 2)}` }; }),
+      { stack: false, ca: "var(--tc-text)", cb: "var(--line-strong)", label: "xG a xGA v zápasech", min: 1 });
+    const list = ms.map(m => {
+      const h = m.h === tid, op = h ? m.a : m.h, r = resultFor(m, tid);
+      if (!m.r) return `<tr><td>${m.k}.</td><td class="l">${dShort(m.d)}</td><td class="l">${h ? "" : "@ "}${tdot(op)}${esc(TM[op].n)}</td><td class="c dim">${tOnly(m.d)}</td><td class="dim">–</td><td class="dim">–</td></tr>`;
+      return `<tr class="click" data-key="z${m.id}"><td>${m.k}.</td><td class="l">${dShort(m.d)}</td><td class="l">${h ? "" : "@ "}${tdot(op)}${esc(TM[op].n)}</td><td class="c"><span class="res ${r}">${RLAB[r]}</span> ${h ? m.gh + ":" + m.ga : m.ga + ":" + m.gh}</td><td>${fmt(h ? m.xh : m.xa, 2)}</td><td>${fmt(h ? m.xa : m.xh, 2)}</td></tr>`;
+    }).join("");
+    const squad = PL.filter(p => p.t.includes(tid) && p.min > 0).sort((a, b) => b.min - a.min);
+    const sq = squad.map(p => `<tr class="click" data-key="p${p.id}"><td class="l"><span class="name">${esc(p.n)}</span>${p.t[0] !== tid ? ` <span class="sm">(odešel)</span>` : ""}</td><td class="c"><span class="chip" style="margin:0">${POS[posKey(p.pos)][0]}</span></td><td>${p.gp}</td><td>${p.min}</td><td>${p.g}</td><td>${p.a}</td><td>${fmt(p.xg)}</td><td>${fmt(p.xa)}</td><td class="${pm(p.g - p.xg)}">${sgn(p.g - p.xg)}</td></tr>`).join("");
+    const ids = new Set(done.map(m => m.id));
+    const sFor = [], sAg = [];
+    SHOTS.forEach(s => { if (!ids.has(s.m)) return; const m = MTI[s.m], mine = (s.side ? m.a : m.h) === tid; (mine ? sFor : sAg).push(s); });
+    const body = `<div class="pd-body">
+      <div class="pd-col">${big}<div><h4>xG a xGA v jednotlivých zápasech</h4>${chart}<div class="legend"><span><i class="sw" style="background:var(--tc-text)"></i>xG týmu</span><span><i class="sw" style="background:var(--line-strong)"></i>xG soupeře</span><span>Nad sloupci výsledek (V/R/P).</span></div></div></div>
+      <div class="pd-col"><div><h4>Zápasy sezony</h4><div class="scroll"><table class="dtab"><thead><tr><th>Kolo</th><th class="l">Datum</th><th class="l">Soupeř</th><th class="c">Výsledek</th><th>xG</th><th>xGA</th></tr></thead><tbody>${list}</tbody></table></div></div></div>
+      <div class="pd-wide"><h4>Mapy střel</h4><div class="maps2"><figure><figcaption>Střely týmu</figcaption>${pitchSum(sFor)}${halfMap(sFor, "var(--tc-text)", "tf" + tid)}</figure><figure><figcaption>Střely soupeřů</figcaption>${pitchSum(sAg)}${halfMap(sAg, "var(--muted)", "ta" + tid)}</figure></div></div>
+      <div class="pd-wide"><h4>Kádr</h4><div class="scroll"><table class="dtab"><thead><tr><th class="l">Hráč</th><th class="c">Poz.</th><th>Z</th><th>Min</th><th>G</th><th>A</th><th>xG</th><th>xA</th><th>G − xG</th></tr></thead><tbody>${sq}</tbody></table></div></div>
+    </div>`;
+    openDrawer(head + body, teamStyle(tid), "t" + tid);
+  }
+
+  /* ===== Detail zápasu ===== */
+  function matchColors(m) {
+    const [h1, h2] = cols(m.h); let [a1, a2] = cols(m.a);
+    let ac = a1;
+    if (cdist(h1, a1) < 110) ac = chroma(a2) > .25 && cdist(h1, a2) >= 110 ? a2 : "#2a5788";
+    const hc = h1;
+    return `--ghl:${readable(hc, h2, LIGHT_BG, "#000000")};--ghd:${readable(hc, h2, DARK_BG, "#ffffff")};--gal:${readable(ac, a2, LIGHT_BG, "#000000")};--gad:${readable(ac, a2, DARK_BG, "#ffffff")}`;
+  }
+  function matchDetail(id) {
+    const m = MTI[id]; if (!m || !m.r) return;
+    const H = TM[m.h], A = TM[m.a], [hc1, hc2] = cols(m.h), [ac1, ac2] = cols(m.a);
+    const shots = (SH_BY_M[id] || []).slice().sort((a, b) => a.min - b.min);
+    const apps = AP_BY_M[id] || [];
+    const sideShots = s => shots.filter(x => x.side === s);
+    const onT = s => sideShots(s).filter(x => x.res === 0 || x.res === 1).length;
+    const big = s => sideShots(s).filter(x => x.xg >= 0.3).length;
+    const kp = tid => apps.filter(a => a.tid === tid).reduce((t, a) => t + a.kp, 0);
+    const cards = (tid, k) => apps.filter(a => a.tid === tid).reduce((t, a) => t + a[k], 0);
+    const duel = (lab, h, a, fh = String(h), fa = String(a)) => { const mx = Math.max(h, a) || 1; return `<div class="drow"><span class="v">${fh}</span><span class="bh"><i style="width:${h / mx * 100}%"></i></span><span class="lab">${lab}</span><span class="ba"><i style="width:${a / mx * 100}%"></i></span><span class="v a">${fa}</span></div>`; };
+    const res = m.gh > m.ga ? "výhra domácích" : m.gh < m.ga ? "výhra hostů" : "remíza";
+    const head = `<header class="gm-head">
+      <div class="gm-team home" style="--c1:${hc1};--c2:${hc2};--on:${onColor(hc1)}"><span class="gm-role">Domácí</span><span class="gm-ab">${esc(H.s)}</span><button type="button" class="gm-nm" data-open="t${m.h}">${esc(H.n)}</button></div>
+      <div class="gm-score"><span>${m.k}. kolo</span><b>${m.gh}<i>:</i>${m.ga}</b><span>${esc(dfmt(m.d, { day: "numeric", month: "numeric", year: "numeric" }).replace(/\s/g, ""))} · ${tOnly(m.d)}</span></div>
+      <div class="gm-team" style="--c1:${ac1};--c2:${ac2};--on:${onColor(ac1)}"><span class="gm-role">Hosté</span><span class="gm-ab">${esc(A.s)}</span><button type="button" class="gm-nm" data-open="t${m.a}">${esc(A.n)}</button></div>
+    </header><h3 id="d-name" hidden>${esc(H.n)} – ${esc(A.n)}</h3>`;
+    const stats = `<div class="duel">${duel("xG", m.xh, m.xa, fmt(m.xh, 2), fmt(m.xa, 2))}${duel("Střely", sideShots(0).length, sideShots(1).length)}${duel("Na branku", onT(0), onT(1))}${duel("Velké šance", big(0), big(1))}${duel("Klíčové přihr.", kp(m.h), kp(m.a))}${duel("Žluté karty", cards(m.h, "yc"), cards(m.a, "yc"))}</div><p class="note" style="margin-top:8px">Velká šance = střela s xG aspoň 0,3. Na branku = gól nebo chycená střela.</p>`;
+    const fc = m.fc ? `<div><h4>Kdo měl podle šancí vyhrát</h4><div class="fcast"><div style="width:${m.fc[0] * 100}%;background:var(--gh)">${Math.round(m.fc[0] * 100)} %</div><div style="width:${m.fc[1] * 100}%;background:var(--line-strong)">${Math.round(m.fc[1] * 100)} %</div><div style="width:${m.fc[2] * 100}%;background:var(--ga)">${Math.round(m.fc[2] * 100)} %</div></div><p class="note" style="margin-top:6px">Pravděpodobnost výhry domácích, remízy a výhry hostů, kdyby se zápas s těmito šancemi hrál znovu (výpočet Understatu). Skutečný výsledek: ${res}.</p></div>` : "";
+    const shotRows = shots.map(s => { const p = PLI[s.pid], tid = s.side ? m.a : m.h; return `<tr class="click${s.res === 0 || s.res === 5 ? " hl" : ""}" data-key="p${s.pid}"><td>${s.min}′</td><td class="l">${tdot(tid)}<span class="name">${esc(p ? p.n : "")}</span></td><td class="l">${s.res === 0 ? "<b>Gól</b>" : RES[s.res]}</td><td class="l">${SIT[s.sit]}</td><td class="l">${s.type < 3 ? TYP[s.type] + (s.type === 2 ? "" : " nohou") : "jinak"}</td><td>${fmt(s.xg, 2)}</td><td class="l sm">${esc(s.ast)}</td></tr>`; }).join("");
+    const lineup = tid => {
+      const rows = apps.filter(a => a.tid === tid).sort((a, b) => b.start - a.start || (a.start ? 0 : b.min - a.min));
+      const tr = a => { const p = PLI[a.pid], rp = RPOS[a.pos] || a.pos; return `<tr class="click${a.start ? "" : " subrow"}" data-key="p${a.pid}"><td class="l"><span class="name">${esc(p ? p.n : "")}</span></td><td class="c"><span class="chip" style="margin:0" title="${esc(RPOS_T[rp] || "")}">${esc(rp)}</span></td><td>${a.min}</td><td>${a.g || "·"}</td><td>${a.a || "·"}</td><td>${a.sh || "·"}</td><td>${fmt(a.xg, 2)}</td><td>${fmt(a.xa, 2)}</td><td>${a.yc ? "ŽK" : ""}${a.rc ? " ČK" : ""}</td></tr>`; };
+      const st = rows.filter(a => a.start), sb = rows.filter(a => !a.start && a.min > 0);
+      return `<h4>${tdot(tid)}${esc(TM[tid].n)}</h4><div class="scroll free"><table class="dtab"><thead><tr><th class="l">Hráč</th><th class="c">Post</th><th>Min</th><th>G</th><th>A</th><th>Stř.</th><th>xG</th><th>xA</th><th></th></tr></thead><tbody>${st.map(tr).join("")}${sb.length ? `<tr class="subhead"><td class="l" colspan="9">Střídající</td></tr>` + sb.map(tr).join("") : ""}</tbody></table></div>`;
+    };
+    const body = `<div class="pd-body gm" style="${matchColors(m)}">
+      <div class="pd-col"><div><h4>Souboj v číslech</h4>${stats}</div></div>
+      <div class="pd-col">${fc}<div><h4>Průběh xG</h4>${flowChart(m, shots)}<div class="legend"><span><i class="sw" style="background:var(--gh)"></i>${esc(H.n)}</span><span><i class="sw" style="background:var(--ga)"></i>${esc(A.n)}</span><span>Tečky = góly.</span></div></div></div>
+      <div class="pd-wide"><h4>Mapa střel · ${esc(H.n)} útočí doprava</h4>${fullMap(shots, "m" + id)}<div class="legend"><span><i class="sw" style="background:var(--gh)"></i>${esc(H.n)}</span><span><i class="sw" style="background:var(--ga)"></i>${esc(A.n)}</span><span>Velikost kruhu = xG. Plný kruh = gól.</span></div></div>
+      <div class="pd-wide"><h4>Všechny střely</h4><div class="scroll"><table class="dtab"><thead><tr><th>Min</th><th class="l">Hráč</th><th class="l">Výsledek</th><th class="l">Situace</th><th class="l">Čím</th><th>xG</th><th class="l">Přihrávka</th></tr></thead><tbody>${shotRows || `<tr><td colspan="7" class="empty">Bez střel.</td></tr>`}</tbody></table></div></div>
+      <div class="pd-wide"><div class="lineups"><div>${lineup(m.h)}</div><div>${lineup(m.a)}</div></div></div>
+    </div>`;
+    openDrawer(head + body, teamStyle(m.h), "z" + id);
+  }
+
+  /* ===== Pohledy a směrování ===== */
+  const VIEWS = ["tabulka", "hraci", "tymy", "zapasy"];
+  const rendered = {};
+  function setView(v, push = true) {
+    if (!VIEWS.includes(v)) v = "tabulka";
+    VIEWS.forEach(x => { $("#view-" + x).hidden = x !== v; $("#tab-" + x).setAttribute("aria-selected", x === v); });
+    if (!rendered[v]) { ({ tabulka: renderTable, hraci: renderPlayers, tymy: renderTeams, zapasy: renderRound })[v](); rendered[v] = true; }
+    if (push && location.hash !== "#" + v) { try { history.replaceState(null, "", "#" + v); } catch { /* náhled */ } }
+  }
+  document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
+  $("#home").addEventListener("click", e => { e.preventDefault(); goHome(); });
+  $("#tohome").addEventListener("click", goHome);
+  window.addEventListener("scroll", () => { $("#tohome").hidden = window.scrollY < 700; }, { passive: true });
+  window.addEventListener("hashchange", () => setView((location.hash || "").slice(1), false));
+  const segBind = (sel, fn) => $(sel).addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; $(sel).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); fn(b.dataset.v); });
+  segBind("#tb-mode", v => { tbMode = v; tbState.k = "rank"; tbState.asc = true; renderTable(); });
+  segBind("#pl-mode", v => { plMode = v; renderPlayers(); });
+  ["#pl-q", "#pl-team", "#pl-pos", "#pl-min"].forEach(s => $(s).addEventListener("input", renderPlayers));
+  $("#pl-reset").addEventListener("click", () => { $("#pl-q").value = ""; $("#pl-team").value = ""; $("#pl-pos").value = ""; $("#pl-min").value = 0; renderPlayers(); });
+  $("#rd-sel").addEventListener("change", e => { rdK = +e.target.value; renderRound(); });
+  $("#rd-prev").addEventListener("click", () => { rdK = Math.max(1, rdK - 1); renderRound(); });
+  $("#rd-next").addEventListener("click", () => { rdK = Math.min(38, rdK + 1); renderRound(); });
+  $("#rd-team").addEventListener("change", renderRound);
+
+  function unpack(o) { return o.rows.map(r => { const x = {}; o.cols.forEach((c, i) => x[c] = r[i]); return x; }); }
+  function init(d) {
+    D = d; MT = d.matches; PL = d.players;
+    d.teams.forEach(t => TM[t.id] = t); PL.forEach(p => { PLI[p.id] = p; p.tn = (TM[p.t[0]] || {}).n || ""; }); MT.forEach(m => MTI[m.id] = m);
+    const lastK = Math.max(0, ...MT.filter(m => m.r).map(m => m.k));
+    const upd = d.updated.split(" "), [y, mo, da] = upd[0].split("-");
+    $("#eyebrow").textContent = `Premier League · sezona ${d.label}`;
+    $("#asof").textContent = `Aktualizováno ${+da}. ${+mo}. ${y} v ${upd[1]} · odehráno ${d.played} z ${d.total} zápasů`;
+    const teamOpts = Object.values(TM).sort((a, b) => a.n.localeCompare(b.n)).map(t => `<option value="${t.id}">${esc(t.n)}</option>`).join("");
+    $("#pl-team").insertAdjacentHTML("beforeend", teamOpts); $("#rd-team").insertAdjacentHTML("beforeend", teamOpts);
+    $("#rd-sel").innerHTML = Array.from({ length: 38 }, (_, i) => `<option value="${i + 1}">${i + 1}. kolo</option>`).join("");
+    // výchozí kolo: poslední, ve kterém se už hrálo; pokud je celé odehrané, další
+    rdK = lastK || 1;
+    renderLeaders();
+    setView((location.hash || "").slice(1), false);
+  }
+  function initExtra(sh, ap) {
+    if (sh) { SHOTS = unpack(sh); SHOTS.forEach(s => { (SH_BY_M[s.m] = SH_BY_M[s.m] || []).push(s); (SH_BY_P[s.pid] = SH_BY_P[s.pid] || []).push(s); }); }
+    if (ap) { APPS = unpack(ap); APPS.forEach(a => { (AP_BY_M[a.m] = AP_BY_M[a.m] || []).push(a); (AP_BY_P[a.pid] = AP_BY_P[a.pid] || []).push(a); }); }
+    EXTRA_OK = !!(sh && ap);
+    if (rendered.tymy) renderTeams();
+    const dr = $("#drawer"); if (!dr.hidden && navStack.length) { navBack = true; try { openKey(navStack[navStack.length - 1]); } finally { navBack = false; } }
+  }
+  const opt = u => fetch(BASE + u).then(r => r.ok ? r.json() : null).catch(() => null);
+  const extraReq = Promise.all([opt("shots.json"), opt("apps.json")]);
+  fetch(BASE + "data.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => { init(d); return extraReq.then(([s, a]) => initExtra(s, a)); })
+    .catch(err => { $("#asof").textContent = "Data se nepodařilo načíst (" + err.message + "). Zkuste stránku obnovit."; console.error(err); });
+})();
+</script>
