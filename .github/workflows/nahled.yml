@@ -15,6 +15,7 @@ concurrency:
 jobs:
   data:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,6 +29,9 @@ jobs:
         run: python build.py
       - name: Historické sezony (stahují se jen chybějící)
         if: hashFiles('probe.py') == '' && hashFiles('build_history.py') != ''
+        env:
+          HIST_MINUTES: "320"
+          COMMIT_PROGRESS: "1"
         run: python build_history.py
       - name: Uložení do větve náhledu
         if: always()
@@ -36,4 +40,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A site cache 2>/dev/null || true
           git diff --cached --quiet || git commit -m "Náhled dat $(date -u +%Y-%m-%dT%H:%M)"
-          git push
+          git pull --rebase -q origin nahled || true
+          git push origin HEAD:nahled

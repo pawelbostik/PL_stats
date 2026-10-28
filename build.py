@@ -7,11 +7,13 @@ Zdroj: Understat.com (tabulka, hráči, týmy, xG, xA a data jednotlivých stře
 Understat nemá oficiální rozhraní; stahujeme šetrně, s pauzami, a každý odehraný
 zápas jen jednou (pak zůstává uložený ve složce cache/).
 
-Výstup (site/):
-  data.json   – týmy, hráči a všechny zápasy sezony
-  shots.json  – všechny střely sezony (pro mapy střel)
-  apps.json   – výkony hráčů v jednotlivých zápasech (pro formu a detail zápasu)
-  index.html  – stránka (z page.html)
+Výstup pro aktuální sezonu (site/), pro starší sezony (site/hist/<rok>/):
+  data.json     – týmy, hráči a všechny zápasy sezony
+  shots.json    – všechny střely sezony (pro mapy střel)
+  apps.json     – výkony hráčů v jednotlivých zápasech (pro formu a detail zápasu)
+Společné:
+  seasons.json  – seznam dostupných sezon
+  index.html    – stránka (z page.html)
 """
 import gzip
 import html
@@ -25,17 +27,16 @@ from datetime import datetime, timedelta, timezone
 
 LEAGUE = "EPL"
 SEASON = os.environ.get("SEASON", "2026")  # Understat značí sezonu rokem začátku: 2026 = 2026/27
+FIRST_SEASON = 2014
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.environ.get("SITE_DIR", os.path.join(ROOT, "site"))
 CACHE = os.path.join(ROOT, "cache")
-MCACHE = os.path.join(CACHE, "matches", SEASON)
 BASE = "https://understat.com/"
 UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
       "Chrome/126.0 Safari/537.36 (pl-statistiky; personal non-commercial stats page)")
 PAUSE = 1.0  # sekundy mezi dotazy
 
 os.makedirs(SITE, exist_ok=True)
-os.makedirs(MCACHE, exist_ok=True)
 
 RES = {"Goal": 0, "SavedShot": 1, "MissedShots": 2, "BlockedShot": 3, "ShotOnPost": 4, "OwnGoal": 5}
 SIT = {"OpenPlay": 0, "FromCorner": 1, "SetPiece": 2, "DirectFreekick": 3, "Penalty": 4}
@@ -61,6 +62,11 @@ def r3(x):
     return round(float(x), 3)
 
 
+def label(season):
+    y = int(season)
+    return "%d/%02d" % (y, (y + 1) % 100)
+
+
 def get(path, referer, tries=4):
     last = None
     for i in range(tries):
@@ -84,14 +90,13 @@ def get(path, referer, tries=4):
     raise RuntimeError("%s: %s" % (path, last))
 
 
-def wjson(name, obj):
-    path = os.path.join(SITE, name)
+def wjson(path, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
     os.replace(tmp, path)
-    log("  zapsáno %s (%.0f kB)" % (name, os.path.getsize(path) / 1024))
+    log("  zapsáno %s (%.0f kB)" % (os.path.relpath(path, SITE), os.path.getsize(path) / 1024))
 
 
 def prague_now():
@@ -106,8 +111,14 @@ def prague_now():
 
 
 # ---------------------------------------------------------------------------
-def load_match(mid, refresh=False):
-    path = os.path.join(MCACHE, "%s.json" % mid)
+def mcache(season):
+    path = os.path.join(CACHE, "matches", str(season))
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+def load_match(season, mid, refresh=False):
+    path = os.path.join(mcache(season), "%s.json" % mid)
     if os.path.exists(path) and not refresh:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
@@ -127,9 +138,16 @@ def load_match(mid, refresh=False):
     return m
 
 
-def build():
-    log("Understat: liga %s, sezona %s" % (LEAGUE, SEASON))
-    lg = get("getLeagueData/%s/%s" % (LEAGUE, SEASON), "league/%s/%s" % (LEAGUE, SEASON))
+def build(season, outdir, current=True, deadline=None):
+    """Sestaví data jedné sezony do složky outdir.
+
+    current=True: zápasy z posledních dvou dnů se stahují znovu (Understat je někdy opraví).
+    deadline: čas (time.time()), po kterém se další zápasy už nestahují; vrací pak False
+              a nic nezapíše, aby se příště pokračovalo.
+    """
+    season = str(season)
+    log("Understat: liga %s, sezona %s" % (LEAGUE, label(season)))
+    lg = get("getLeagueData/%s/%s" % (LEAGUE, season), "league/%s/%s" % (LEAGUE, season))
     teams_raw, players_raw, dates = lg["teams"], lg["players"], lg["dates"]
     title2id = {u(t["title"]): str(t["id"]) for t in teams_raw.values()}
     short = {}
@@ -158,16 +176,23 @@ def build():
     # --- detaily odehraných zápasů (cache) ---
     played = [m for m in matches if m["r"]]
     now = datetime.now(timezone.utc).replace(tzinfo=None)
-    new = 0
+    new = failed = 0
     shots, apps = [], []
     for m in played:
-        recent = (now - datetime.strptime(m["d"], "%Y-%m-%d %H:%M")).total_seconds() < 2 * 86400
+        recent = current and (now - datetime.strptime(m["d"], "%Y-%m-%d %H:%M")).total_seconds() < 2 * 86400
+        cached = os.path.exists(os.path.join(mcache(season), "%s.json" % m["id"]))
+        if not cached or recent:
+            if deadline and time.time() > deadline:
+                log("  časový limit: sezona %s nedokončena, pokračuje se příště" % label(season))
+                return False
+            new += 1
+            if new % 50 == 0:
+                log("  … staženo %d zápasů" % new)
         try:
-            if recent or not os.path.exists(os.path.join(MCACHE, "%s.json" % m["id"])):
-                new += 1
-            det = load_match(m["id"], refresh=recent)
+            det = load_match(season, m["id"], refresh=recent)
         except Exception as e:  # noqa: BLE001
             log("!! zápas %s se nepodařilo stáhnout: %s" % (m["id"], e))
+            failed += 1
             continue
         for s in det["shots"]:
             shots.append([m["id"], num(s["minute"], int), num(s["player_id"], int), 0 if s["h_a"] == "h" else 1,
@@ -182,7 +207,10 @@ def build():
                              num(r["own_goals"], int), num(r["assists"], int), num(r["shots"], int), r3(r["xG"]),
                              r3(r["xA"]), num(r["key_passes"], int), num(r["yellow_card"], int), num(r["red_card"], int),
                              r3(r["xGChain"]), r3(r["xGBuildup"]), 0 if pos == "Sub" else 1])
-    log("  zápasy: %d odehraných, %d staženo nově/obnoveno" % (len(played), new))
+    log("  zápasy: %d odehraných, %d staženo nově/obnoveno, %d selhalo" % (len(played), new, failed))
+    if failed and not current:
+        log("  sezona %s má chybějící zápasy, uloží se až příště" % label(season))
+        return False
 
     # --- týmy ---
     teams = []
@@ -227,14 +255,24 @@ def build():
         if lt and lt in p["t"]:
             p["t"] = [lt] + [x for x in p["t"] if x != lt]
 
-    upd = prague_now().strftime("%Y-%m-%d %H:%M")
-    y = int(SEASON)
-    data = {"season": SEASON, "label": "%d/%02d" % (y, (y + 1) % 100), "league": "Premier League", "updated": upd,
+    data = {"season": season, "label": label(season), "league": "Premier League",
+            "updated": prague_now().strftime("%Y-%m-%d %H:%M"), "archive": not current,
             "played": len(played), "total": len(matches), "teams": teams, "players": players, "matches": matches}
-    wjson("data.json", data)
-    wjson("shots.json", {"cols": ["m", "min", "pid", "side", "x", "y", "xg", "res", "sit", "type", "ast", "last"], "rows": shots})
-    wjson("apps.json", {"cols": ["m", "pid", "tid", "pos", "min", "g", "og", "a", "sh", "xg", "xa", "kp", "yc", "rc", "xgc", "xgb", "start"], "rows": apps})
+    # Nejdřív střely a výkony, data.json až nakonec: jeho existence znamená, že sezona je kompletní.
+    wjson(os.path.join(outdir, "shots.json"), {"cols": ["m", "min", "pid", "side", "x", "y", "xg", "res", "sit", "type", "ast", "last"], "rows": shots})
+    wjson(os.path.join(outdir, "apps.json"), {"cols": ["m", "pid", "tid", "pos", "min", "g", "og", "a", "sh", "xg", "xa", "kp", "yc", "rc", "xgc", "xgb", "start"], "rows": apps})
+    wjson(os.path.join(outdir, "data.json"), data)
     return True
+
+
+def write_seasons():
+    hist = os.path.join(SITE, "hist")
+    years = []
+    if os.path.isdir(hist):
+        years = sorted((int(y) for y in os.listdir(hist)
+                        if y.isdigit() and os.path.exists(os.path.join(hist, y, "data.json"))), reverse=True)
+    out = [{"s": SEASON, "l": label(SEASON), "cur": True}] + [{"s": str(y), "l": label(y)} for y in years if str(y) != SEASON]
+    wjson(os.path.join(SITE, "seasons.json"), out)
 
 
 SKELETON = ('<!doctype html>\n<html lang="cs">\n<head>\n<meta charset="utf-8">\n'
@@ -259,10 +297,11 @@ def build_page():
 def main():
     ok = True
     try:
-        build()
+        build(SEASON, SITE, current=True)
     except Exception as e:  # noqa: BLE001
         log("!! Stažení dat selhalo, ponechávám předchozí data: %s" % e)
         ok = False
+    write_seasons()
     build_page()
     if not ok and not os.path.exists(os.path.join(SITE, "data.json")):
         sys.exit(1)
