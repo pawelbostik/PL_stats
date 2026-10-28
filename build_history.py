@@ -26,7 +26,9 @@ def commit(msg):
         subprocess.run(["git", "add", "-A", "site", "cache"], check=True, cwd=b.ROOT)
         if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=b.ROOT).returncode == 0:
             return
-        subprocess.run(["git", "commit", "-q", "-m", msg], check=True, cwd=b.ROOT)
+        subprocess.run(["git", "-c", "user.name=github-actions[bot]", "-c",
+                        "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+                        "commit", "-q", "-m", msg], check=True, cwd=b.ROOT)
         branch = os.environ.get("GITHUB_REF_NAME", "main")
         subprocess.run(["git", "pull", "--rebase", "-q", "origin", branch], cwd=b.ROOT)
         subprocess.run(["git", "push", "-q", "origin", "HEAD:" + branch], check=True, cwd=b.ROOT)
